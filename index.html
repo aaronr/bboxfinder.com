@@ -18,14 +18,17 @@
 </head>
 <body>
     <div id="map"></div>
-    <div id="bounds">
-        <input type="textarea" size= "65" id='mapbounds' name="mapbounds" value="Map Bounds" />:Bounds
+    <div id="bbounds">
+        <input type="textarea" size= "75" id='boxbounds' name="boxbounds" value="Box Bounds" /><input type="textarea" size="8" class="bboxlabel" value=":BoxBounds"/>
+    </div>
+    <div id="mbounds">
+        <input type="textarea" size= "75" id='mapbounds' name="mapbounds" value="Map Bounds" /><input type="textarea" size="8" class="bboxlabel" value=":MapBounds"/>
     </div>
     <div id="mouse">
-        <input type="textarea" size= "35" id='mousepos' name="mousepos" value="Mouse Position Google Mercator" />:Mouse
+        <input type="textarea" size= "35" id='mousepos' name="mousepos" value="Mouse Position Google Mercator" /><input type="textarea" size="6" class="bboxlabel" value=":Mouse"/>
     </div>
     <div id="zoom">
-        <input type="textarea" size= "35" id='zoomlevel' name="zoomlevel" value="Zoom Level" />:Zoom
+        <input type="textarea" size= "35" id='zoomlevel' name="zoomlevel" value="Zoom Level" /><input type="textarea" size="6" class="bboxlabel" value=":Zoom"/>
     </div>
 </body>                                                                                                                          
 <script>

@@ -4,7 +4,14 @@ html, body, #map {
    padding:0px;
    margin:0px;
 } 
-#bounds {
+#bbounds {
+   font-size: small;
+   left:10px;
+   position:absolute;
+   bottom: 80px;
+   z-index:10000;
+} 
+#mbounds {
    font-size: small;
    left:10px;
    position:absolute;
@@ -24,4 +31,10 @@ html, body, #map {
    position:absolute;
    bottom: 20px;
    z-index:10000;
+} 
+.bboxlabel {
+   font-size: small;
+   z-index:10000;
+   background-color:black;
+   color:white;
 } 

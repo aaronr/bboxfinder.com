@@ -16,12 +16,31 @@ $(function() {
     });
     map.addControl(drawControl);
 
+    var bounds = new L.Rectangle(map.getBounds(),{fill:false});
+    map.addLayer(bounds)
+
     map.on('draw:created', function (e) {
         drawnItems.addLayer(e.layer);
+        bounds.setBounds(drawnItems.getBounds())
+        $('#boxbounds').val(bounds.getBounds().toBBoxString());
+    });
+    
+    map.on('draw:deleted', function (e) {
+        e.layers.eachLayer(function (l) {
+            drawnItems.removeLayer(l);
+        });
+        bounds.setBounds(drawnItems.getBounds())
+        $('#boxbounds').val(bounds.getBounds().toBBoxString());
+    });
+    
+    map.on('draw:edited', function (e) {
+        bounds.setBounds(drawnItems.getBounds())
+        $('#boxbounds').val(bounds.getBounds().toBBoxString());
     });
     
     $('#zoomlevel').val(map.getZoom().toString());
     $('#mapbounds').val(map.getBounds().toBBoxString());
+    $('#boxbounds').val(bounds.getBounds().toBBoxString());
 
     map.on('mousemove', function(e) {
         $('#mousepos').val(e.latlng.toString());
