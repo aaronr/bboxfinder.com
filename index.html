@@ -13,6 +13,13 @@
        padding:0px;
        margin:0px;
     } 
+    #bounds {
+       font-size: small;
+       left:10px;
+       position:absolute;
+       bottom: 60px;
+       z-index:10000;
+    } 
     #mouse {
        font-size: small;
        left:10px;
@@ -37,6 +44,9 @@
 </head>
 <body>
     <div id="map"></div>
+    <div id="bounds">
+        <input type="textarea" size= "65" id='mapbounds' name="mapbounds" value="Map Bounds" />:Bounds
+    </div>
     <div id="mouse">
         <input type="textarea" size= "35" id='mousepos' name="mousepos" value="Mouse Position Google Mercator" />:Mouse
     </div>
