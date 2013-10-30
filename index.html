@@ -1,27 +1,47 @@
 <html>
 <head>
-   <title>bbox finder</title>
-   
-   <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-   
-   <link rel="stylesheet" href="css/maps/leaflet.css" />
-   <link rel="stylesheet" href="css/maps/mapbox.standalone.css" />
-   <style>
-   html, body, #map {
-      height:100%;
-      width:100%;
-      padding:0px;
-      margin:0px;
-   } 
-   </style>
-   
-   <script src="js/libs/jquery-1.9.1.min.js"></script>
-   <script src="js/maps/leaflet.js"></script>
-   <script src="js/maps/mapbox.standalone.js"></script>
-   <script src="js/bbox.js"></script>
+    <title>bbox finder</title>
+    
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    
+    <link rel="stylesheet" href="css/maps/leaflet.css" />
+    <link rel="stylesheet" href="css/maps/mapbox.standalone.css" />
+    <style>
+    html, body, #map {
+       height:100%;
+       width:100%;
+       padding:0px;
+       margin:0px;
+    } 
+    #mouse {
+       font-size: small;
+       left:10px;
+       position:absolute;
+       bottom: 40px;
+       z-index:10000;
+    } 
+    #zoom {
+       font-size: small;
+       left:10px;
+       position:absolute;
+       bottom: 20px;
+       z-index:10000;
+    } 
+    </style>
+    
+    <script src="js/libs/jquery-1.9.1.min.js"></script>
+    <script src="js/maps/leaflet.js"></script>
+    <script src="js/maps/mapbox.standalone.js"></script>
+    <script src="js/bbox.js"></script>
    
 </head>
 <body>
-   <div id="map"></div>   
+    <div id="map"></div>
+    <div id="mouse">
+        <input type="textarea" size= "35" id='mousepos' name="mousepos" value="Mouse Position Google Mercator" />:Mouse
+    </div>
+    <div id="zoom">
+        <input type="textarea" size= "35" id='zoomlevel' name="zoomlevel" value="Zoom Level" />:Zoom
+    </div>
 </body>                                                                                                                          
 </html>
