@@ -1,0 +1,27 @@
+html, body, #map {
+   height:100%;
+   width:100%;
+   padding:0px;
+   margin:0px;
+} 
+#bounds {
+   font-size: small;
+   left:10px;
+   position:absolute;
+   bottom: 60px;
+   z-index:10000;
+} 
+#mouse {
+   font-size: small;
+   left:10px;
+   position:absolute;
+   bottom: 40px;
+   z-index:10000;
+} 
+#zoom {
+   font-size: small;
+   left:10px;
+   position:absolute;
+   bottom: 20px;
+   z-index:10000;
+} 
