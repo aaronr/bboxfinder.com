@@ -50,5 +50,17 @@ $(function() {
         $('#zoomlevel').val(map.getZoom().toString());
     });
 
+    var clip = new ZeroClipboard( $("boxboundsbtn"), {
+        moviePath: "/swf/ZeroClipboard.swf"
+    });
+    
+    clip.on( "load", function(client) {
+        client.on( "complete", function(client, args) {
+            // `this` is the element that was clicked
+            //this.style.display = "none";
+            alert("Copied text to clipboard: " + args.text );
+        });
+    });
+    
 });
 

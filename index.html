@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/bbox.css" />
     
     <script src="js/libs/jquery-1.9.1.min.js"></script>
+    <script src="js/libs/ZeroClipboard.min.js"></script>
     <script src="js/maps/leaflet.js"></script>
     <script src="js/maps/leaflet.draw.js"></script>
     <script src="js/maps/mapbox.standalone.js"></script>
@@ -19,7 +20,7 @@
 <body>
     <div id="map"></div>
     <div id="bbounds">
-        <input type="textarea" size= "75" id='boxbounds' name="boxbounds" value="Box Bounds" /><input type="textarea" size="8" class="bboxlabel" value=":BoxBounds"/>
+        <input type="textarea" size= "75" id='boxbounds' name="boxbounds" value="Box Bounds" /><input id="boxboundsbtn" type="textarea" size="8" class="bboxlabel" value=":BoxBounds"/>
     </div>
     <div id="mbounds">
         <input type="textarea" size= "75" id='mapbounds' name="mapbounds" value="Map Bounds" /><input type="textarea" size="8" class="bboxlabel" value=":MapBounds"/>
