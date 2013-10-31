@@ -50,15 +50,40 @@ $(function() {
         $('#zoomlevel').val(map.getZoom().toString());
     });
 
-    var clip = new ZeroClipboard( $("boxboundsbtn"), {
+    var boxboundclip = new ZeroClipboard( $("#boxboundsbtn"), {
         moviePath: "/swf/ZeroClipboard.swf"
     });
     
-    clip.on( "load", function(client) {
+    boxboundclip.on( "load", function(client) {
         client.on( "complete", function(client, args) {
-            // `this` is the element that was clicked
-            //this.style.display = "none";
-            alert("Copied text to clipboard: " + args.text );
+            //empty
+        });
+    });
+    var mapboundclip = new ZeroClipboard( $("#mapboundsbtn"), {
+        moviePath: "/swf/ZeroClipboard.swf"
+    });
+    
+    mapboundclip.on( "load", function(client) {
+        client.on( "complete", function(client, args) {
+            //empty
+        });
+    });
+    var mouseposclip = new ZeroClipboard( $("#mouseposbtn"), {
+        moviePath: "/swf/ZeroClipboard.swf"
+    });
+    
+    mouseposclip.on( "load", function(client) {
+        client.on( "complete", function(client, args) {
+            //empty
+        });
+    });
+    var zoomlevelclip = new ZeroClipboard( $("#zoomlevelbtn"), {
+        moviePath: "/swf/ZeroClipboard.swf"
+    });
+    
+    zoomlevelclip.on( "load", function(client) {
+        client.on( "complete", function(client, args) {
+            //empty
         });
     });
     
