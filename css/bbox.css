@@ -8,10 +8,17 @@ html, body, #map {
    font-size: small;
    left:10px;
    position:absolute;
-   bottom: 80px;
+   bottom: 100px;
    z-index:10000;
 } 
 #mbounds {
+   font-size: small;
+   left:10px;
+   position:absolute;
+   bottom: 80px;
+   z-index:10000;
+} 
+#mcenter {
    font-size: small;
    left:10px;
    position:absolute;

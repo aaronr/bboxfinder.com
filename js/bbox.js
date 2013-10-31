@@ -124,15 +124,18 @@ $(function() {
     $('#zoomlevel').val(map.getZoom().toString());
     $('#mapbounds').val(formatBounds(map.getBounds(),'4326','gdal'));
     $('#mapboundsmerc').val(formatBounds(map.getBounds(),'3857','gdal'));
+    $('#center').val(formatPoint(map.getCenter(),'4326','gdal'));
+    $('#centermerc').val(formatPoint(map.getCenter(),'3857','gdal'));
     $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
     $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
 
     map.on('mousemove', function(e) {
         $('#mousepos').val(formatPoint(e.latlng,'4326','gdal'));
         $('#mouseposmerc').val(formatPoint(e.latlng,'3857','gdal'));
-        //$('#mouseposmerc').val(e.latlng.toString());
         $('#mapbounds').val(formatBounds(map.getBounds(),'4326','gdal'));
         $('#mapboundsmerc').val(formatBounds(map.getBounds(),'3857','gdal'));
+        $('#center').val(formatPoint(map.getCenter(),'4326','gdal'));
+        $('#centermerc').val(formatPoint(map.getCenter(),'3857','gdal'));
     });
     map.on('zoomend', function(e) {
         $('#zoomlevel').val(map.getZoom().toString());
@@ -173,6 +176,26 @@ $(function() {
     });
     
     mapboundmercclip.on( "load", function(client) {
+        client.on( "complete", function(client, args) {
+            //empty
+        });
+    });
+
+    var centerclip = new ZeroClipboard( $("#centerbtn"), {
+        moviePath: "/swf/ZeroClipboard.swf"
+    });
+    
+    centerclip.on( "load", function(client) {
+        client.on( "complete", function(client, args) {
+            //empty
+        });
+    });
+
+    var centermercclip = new ZeroClipboard( $("#centermercbtn"), {
+        moviePath: "/swf/ZeroClipboard.swf"
+    });
+    
+    centermercclip.on( "load", function(client) {
         client.on( "complete", function(client, args) {
             //empty
         });
