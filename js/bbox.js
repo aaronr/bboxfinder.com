@@ -1,5 +1,38 @@
 var map = null;
 
+function addLayer(layer, name, zIndex, on) {
+    if (on) {
+        layer.setZIndex(zIndex).addTo(map);;
+    } else {
+        layer.setZIndex(zIndex);
+    }
+    // Create a simple layer switcher that toggles layers on and off.
+    var ui = document.getElementById('map-ui');
+    var item = document.createElement('li');
+    var link = document.createElement('a');
+    link.href = '#';
+    if (on) {
+        link.className = 'active';
+    } else {
+        link.className = '';
+    }
+    link.innerHTML = name;
+    link.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (map.hasLayer(layer)) {
+            map.removeLayer(layer);
+            this.className = '';
+        } else {
+            map.addLayer(layer);
+            this.className = 'active';
+        }
+    };
+    item.appendChild(link);
+    ui.appendChild(item);
+};
+
 $(function() {
     map = L.mapbox.map('map', 'examples.map-9ijuk24y')
         .setView([48, -122], 5);
@@ -86,6 +119,11 @@ $(function() {
             //empty
         });
     });
+
+    // Add in a layer to overlay the tile bounds of the google grid
+    var tiles = new L.tileLayer('/images/tile.png', {});
+    addLayer(tiles, 'Tile Grid', 10, false)
+
     
 });
 
