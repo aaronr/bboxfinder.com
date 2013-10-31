@@ -139,6 +139,8 @@ $(function() {
     });
     map.on('zoomend', function(e) {
         $('#zoomlevel').val(map.getZoom().toString());
+        $('#mapbounds').val(formatBounds(map.getBounds(),'4326','gdal'));
+        $('#mapboundsmerc').val(formatBounds(map.getBounds(),'3857','gdal'));
     });
 
     var boxboundclip = new ZeroClipboard( $("#boxboundsbtn"), {
