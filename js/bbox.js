@@ -33,6 +33,53 @@ function addLayer(layer, name, zIndex, on) {
     ui.appendChild(item);
 };
 
+function formatBounds(bounds, proj, tool) {
+    var formattedBounds = '';
+    var southwest = bounds.getSouthWest();
+    var northeast = bounds.getNorthEast();
+    var xmin = 0;
+    var xmin = 0;
+    var xmin = 0;
+    var xmin = 0;   
+    if (proj == '4326') {
+        xmin = southwest.lng.toFixed(6);
+        ymin = southwest.lat.toFixed(6);
+        xmax = northeast.lng.toFixed(6);
+        ymax = northeast.lat.toFixed(6);
+    } else {
+        southwest = L.CRS.EPSG3857.project(southwest)
+        northeast = L.CRS.EPSG3857.project(northeast)
+        xmin = southwest.x.toFixed(4);
+        ymin = southwest.y.toFixed(4);
+        xmax = northeast.x.toFixed(4);
+        ymax = northeast.y.toFixed(4);
+    }
+    if (tool === 'gdal') {
+        formattedBounds = xmin+','+ymin+','+xmax+','+ymax;
+    } else {
+        formattedBounds = xmin+' '+ymin+' '+xmax+' '+ymax;
+    }
+    return formattedBounds
+}
+
+function formatPoint(point, proj, tool) {
+    var formattedPoint = '';
+    if (proj == '4326') {
+        x = point.lng.toFixed(6);
+        y = point.lat.toFixed(6);
+    } else {
+        point = L.CRS.EPSG3857.project(point)
+        x = point.x.toFixed(4);
+        y = point.y.toFixed(4);
+    }
+    if (tool === 'gdal') {
+        formattedBounds = x+','+y;
+    } else {
+        formattedBounds = x+' '+y;
+    }
+    return formattedBounds
+}
+
 $(function() {
     map = L.mapbox.map('map', 'examples.map-9ijuk24y')
         .setView([48, -122], 5);
@@ -55,7 +102,8 @@ $(function() {
     map.on('draw:created', function (e) {
         drawnItems.addLayer(e.layer);
         bounds.setBounds(drawnItems.getBounds())
-        $('#boxbounds').val(bounds.getBounds().toBBoxString());
+        $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
+        $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
     });
     
     map.on('draw:deleted', function (e) {
@@ -63,21 +111,28 @@ $(function() {
             drawnItems.removeLayer(l);
         });
         bounds.setBounds(drawnItems.getBounds())
-        $('#boxbounds').val(bounds.getBounds().toBBoxString());
+        $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
+        $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
     });
     
     map.on('draw:edited', function (e) {
         bounds.setBounds(drawnItems.getBounds())
-        $('#boxbounds').val(bounds.getBounds().toBBoxString());
+        $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
+        $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
     });
     
     $('#zoomlevel').val(map.getZoom().toString());
-    $('#mapbounds').val(map.getBounds().toBBoxString());
-    $('#boxbounds').val(bounds.getBounds().toBBoxString());
+    $('#mapbounds').val(formatBounds(map.getBounds(),'4326','gdal'));
+    $('#mapboundsmerc').val(formatBounds(map.getBounds(),'3857','gdal'));
+    $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
+    $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
 
     map.on('mousemove', function(e) {
-        $('#mousepos').val(e.latlng.toString());
-        $('#mapbounds').val(map.getBounds().toBBoxString());
+        $('#mousepos').val(formatPoint(e.latlng,'4326','gdal'));
+        $('#mouseposmerc').val(formatPoint(e.latlng,'3857','gdal'));
+        //$('#mouseposmerc').val(e.latlng.toString());
+        $('#mapbounds').val(formatBounds(map.getBounds(),'4326','gdal'));
+        $('#mapboundsmerc').val(formatBounds(map.getBounds(),'3857','gdal'));
     });
     map.on('zoomend', function(e) {
         $('#zoomlevel').val(map.getZoom().toString());
@@ -92,6 +147,17 @@ $(function() {
             //empty
         });
     });
+
+    var boxboundmercclip = new ZeroClipboard( $("#boxboundsmercbtn"), {
+        moviePath: "/swf/ZeroClipboard.swf"
+    });
+    
+    boxboundmercclip.on( "load", function(client) {
+        client.on( "complete", function(client, args) {
+            //empty
+        });
+    });
+
     var mapboundclip = new ZeroClipboard( $("#mapboundsbtn"), {
         moviePath: "/swf/ZeroClipboard.swf"
     });
@@ -101,20 +167,12 @@ $(function() {
             //empty
         });
     });
-    var mouseposclip = new ZeroClipboard( $("#mouseposbtn"), {
+
+    var mapboundmercclip = new ZeroClipboard( $("#mapboundsmercbtn"), {
         moviePath: "/swf/ZeroClipboard.swf"
     });
     
-    mouseposclip.on( "load", function(client) {
-        client.on( "complete", function(client, args) {
-            //empty
-        });
-    });
-    var zoomlevelclip = new ZeroClipboard( $("#zoomlevelbtn"), {
-        moviePath: "/swf/ZeroClipboard.swf"
-    });
-    
-    zoomlevelclip.on( "load", function(client) {
+    mapboundmercclip.on( "load", function(client) {
         client.on( "complete", function(client, args) {
             //empty
         });

@@ -22,14 +22,14 @@ html, body, #map {
    font-size: small;
    left:10px;
    position:absolute;
-   bottom: 40px;
+   bottom: 30px;
    z-index:10000;
 } 
 #zoom {
    font-size: small;
    left:10px;
    position:absolute;
-   bottom: 20px;
+   bottom: 10px;
    z-index:10000;
 } 
 .bboxlabel {
