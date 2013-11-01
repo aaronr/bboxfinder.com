@@ -1,5 +1,23 @@
 var map = null;
 
+/*
+**
+**  override L.Rectangle 
+**  to fire an event after setting
+**
+**  the base parent object L.Path
+**  includes the L.Mixin.Events
+**
+**  ensures bbox box is always
+**  the topmost SVG feature
+**
+*/
+L.Rectangle.prototype.setBounds = function (latLngBounds) {
+
+    this.setLatLngs(this._boundsToLatLngs(latLngBounds));
+    this.fire( 'bounds-set' );
+}
+
 function addLayer(layer, name, zIndex, on) {
     if (on) {
         layer.setZIndex(zIndex).addTo(map);;
@@ -96,7 +114,18 @@ $(function() {
     });
     map.addControl(drawControl);
 
-    var bounds = new L.Rectangle(map.getBounds(),{fill:false});
+    var bounds = new L.Rectangle(map.getBounds(),
+        {
+            fill : false,
+            opacity : 1.0,
+            color : '#000'
+        }
+    );
+    bounds.on('bounds-set', function( e ) {
+        // move it to the end of the parent
+        var parent = e.target._container.parentElement;
+        $( parent ).append( e.target._container ); 
+    });
     map.addLayer(bounds)
 
     map.on('draw:created', function (e) {
