@@ -99,6 +99,20 @@ function formatPoint(point, proj, tool) {
 }
 
 $(function() {
+
+    /* 
+    **
+    **  make sure all textarea inputs
+    **  are selected once they are clicked
+    **  because some people might not 
+    **  have flash enabled or installed
+    **  and yes...
+    **  there's a fucking Flash movie floating 
+    **  on top of your DOM
+    **
+    */
+    $('input[type="textarea"]').on( 'click', function( evt ) { this.select() } );
+
     map = L.mapbox.map('map', 'examples.map-9ijuk24y')
         .setView([48, -122], 5);
 
@@ -172,13 +186,36 @@ $(function() {
         $('#mapboundsmerc').val(formatBounds(map.getBounds(),'3857','gdal'));
     });
 
+    var zeroFeedback = function( target ){
+
+        $(target).append( "<span id='zfeedback'>&nbsp;Copied!&nbsp;</span>" );
+
+        $('#zfeedback').css({
+             "background-color" : "#C7C700" ,
+             "font-stye" : "bold" ,
+             "border-radius" : "15px" ,
+             "padding" : "5px" ,
+             "box-shadow" : "0px 2px 20px #000"
+        });
+
+        $(target)
+            .animate( { opacity : 0 , top : "-=100" }, 500 );
+
+        setTimeout( function(){
+            $(target).css( "opacity", 1.0 );
+            $(target).css( "background-color", "" );
+            $('#zfeedback').remove();
+        }, 700 );
+
+    }
+
     var boxboundclip = new ZeroClipboard( $("#boxboundsbtn"), {
         moviePath: "/swf/ZeroClipboard.swf"
     });
     
     boxboundclip.on( "load", function(client) {
         client.on( "complete", function(client, args) {
-            //empty
+            zeroFeedback( client.htmlBridge );
         });
     });
 
@@ -188,7 +225,7 @@ $(function() {
     
     boxboundmercclip.on( "load", function(client) {
         client.on( "complete", function(client, args) {
-            //empty
+            zeroFeedback( client.htmlBridge );
         });
     });
 
@@ -198,7 +235,7 @@ $(function() {
     
     mapboundclip.on( "load", function(client) {
         client.on( "complete", function(client, args) {
-            //empty
+            zeroFeedback( client.htmlBridge );
         });
     });
 
@@ -208,7 +245,7 @@ $(function() {
     
     mapboundmercclip.on( "load", function(client) {
         client.on( "complete", function(client, args) {
-            //empty
+            zeroFeedback( client.htmlBridge );
         });
     });
 
@@ -218,7 +255,7 @@ $(function() {
     
     centerclip.on( "load", function(client) {
         client.on( "complete", function(client, args) {
-            //empty
+            zeroFeedback( client.htmlBridge );
         });
     });
 
@@ -228,7 +265,7 @@ $(function() {
     
     centermercclip.on( "load", function(client) {
         client.on( "complete", function(client, args) {
-            //empty
+            zeroFeedback( client.htmlBridge );
         });
     });
 

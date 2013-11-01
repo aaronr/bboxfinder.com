@@ -107,3 +107,13 @@ html, body, #map {
     border-top-color: #FFF;
     color: #FFF;
 }
+
+.zeroclipboard-is-hover {
+  color: rgb(51, 51, 51);
+  background-color: rgb(230, 230, 230);
+  text-decoration: none;
+  background-position: 0px -15px;
+  transition: background-position 0.1s linear 0s;
+}
+
+
