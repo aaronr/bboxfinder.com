@@ -4,6 +4,20 @@ html, body, #map {
    padding:0px;
    margin:0px;
 } 
+#wgslabel {
+   font-size: small;
+   left: 157px;
+   position: absolute;
+   bottom: 126px;
+   z-index: 10000;
+}
+#smerclabel {
+   font-size: small;
+   left: 542px;
+   position: absolute;
+   bottom: 126px;
+   z-index: 10000;
+}
 #bbounds {
    font-size: small;
    left:10px;
