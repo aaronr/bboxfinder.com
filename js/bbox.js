@@ -86,9 +86,6 @@ function addGeoms() {
     
 }
 
-function endOverlay() {
-}
-
 function addLayer(layer, name, zIndex, on) {
     if (on) {
         layer.setZIndex(zIndex).addTo(map);;
