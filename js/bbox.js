@@ -92,6 +92,92 @@ function addLayer(layer, name, zIndex, on) {
     ui.appendChild(item);
 };
 
+
+function addGeoJson() {
+
+    var data = $('.ocontainer textarea').val();
+
+    // QC as JSON
+    try{
+        data = JSON.parse( data );
+    } catch(err){
+        if( /unexpected token/i.test(err.message) ){
+            alert( "That's not parsable JSON dude!" );
+        }
+        else {
+            alert( "Something doesn't smell right about that JSON" );
+        }
+        return false;
+    }
+
+    // create geojson layer
+    try {
+        var gjson_layer = new L.geoJson( data );
+    }
+    catch( err ){
+        alert( "Yuck. Leaflet puked up your geojson with this error:\n" + err.message );
+        return false;
+    }
+
+    /*
+    ** 
+    **  QC feature layer count to make
+    **  sure someone is not trying to bomb
+    **  the system
+    **
+    */
+    if ( gjson_layer.getLayers().length >= 50 ) {
+        alert( "Try adding geojson with < 50 features dingus" );
+        return false;
+    }
+
+    /* 
+    **  add it as L.FeatureGroup layer 
+    **  to work with L.Draw
+    **  edit and delete options
+    **  by faking event information
+    **  and triggering draw:created
+    */
+    gjson_layer.getLayers().forEach( function( lyr, indx ){
+
+        // create payload event object to pass to L.FeatureGroup
+        var event_obj = {
+            layer : lyr ,
+            layerType : null
+        };
+
+        // sniff the feature.geometry type and coerce to L.Draw types
+        var geom_type = lyr.feature.geometry.type;
+
+        if ( geom_type === "Point" || 
+                geom_type === "MultiPoint" ){
+
+            event_obj.layerType = "marker";
+
+        }
+        else if ( geom_type === "LineString" || 
+                    geom_type === "MultiLineString" ){
+
+            event_obj.layerType = "polyline";
+
+        }
+        else if ( geom_type === "Polygon" ||
+                    geom_type === "MultiPolygon" ){
+
+            event_obj.layerType = "polygon";
+
+        }
+
+        // call L.Draw.Feature.prototype._fireCreatedEvent
+        map.fire( 'draw:created', event_obj );
+
+    });
+
+    return true;
+    
+}
+
+
 function formatBounds(bounds, proj, tool) {
     var formattedBounds = '';
     var southwest = bounds.getSouthWest();
@@ -324,7 +410,7 @@ $(function() {
     $('button#cancel').on( 'click', endLightBox );
 
     $('button#add').on( 'click', function(evt){
-        // nothing happens here, just a hook
+        var is_valid = addGeoJson();
         endLightBox();
     });
 
