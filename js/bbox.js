@@ -18,6 +18,77 @@ L.Rectangle.prototype.setBounds = function (latLngBounds) {
     this.fire( 'bounds-set' );
 }
 
+function startLightBox() {
+
+    $("#ocontainer")
+        .before('<div class="overlay"></div>')
+
+    $(".overlay")
+        .animate({"opacity":"0.6"}, 200, "linear");
+
+    $(".ocontainer").css( "display", "inherit" );
+
+    // use width and height to dynamically position
+    var cWidth = $(".ocontainer textarea").width();
+    var cHeight = $(".ocontainer textarea").height();
+
+    $(".ocontainer")
+        .css({
+            "top":        "50%",
+            "left":        "50%",
+            "width":      cWidth + 20,
+            "height":     cHeight + 20,
+            "margin-top": -(cHeight/2), // the middle position
+            "margin-left":-(cWidth/2)
+        })
+        .animate({"opacity":"1"}, 200, "linear");
+
+    
+    $("#map .leaflet-tile-loaded").addClass( "blurred" );
+}
+
+function endLightBox(){
+
+    $('.ocontainer').css("display", "none" );
+    $('#map .leaflet-tile-loaded').removeClass('blurred');
+    $('#map .leaflet-tile-loaded').addClass('unblurred');
+    setTimeout( function(){
+        $('#map .leaflet-tile-loaded').removeClass('unblurred');
+    },7000);
+    $('.overlay').remove();
+
+}
+
+function addGeoms() {
+
+    var data = $('.ocontainer textarea').val();
+
+    // QC as JSON
+    try{
+        data = JSON.parse( data );
+    } catch(err){
+        if( /unexpected token/i.test(err.message) ){
+            alert( "That's not JSON dude!" );
+        }
+        else {
+            alert( "Something doesn't smell right about that JSON" );
+        }
+        return false;
+    }
+
+    /* 
+    **  try adding it as a layer
+    **  by trigger draw:event
+    */
+    var glayer = new L.geoJson( data );
+    map.fire( 'draw:created', { layer: glayer } )
+    return true;
+    
+}
+
+function endOverlay() {
+}
+
 function addLayer(layer, name, zIndex, on) {
     if (on) {
         layer.setZIndex(zIndex).addTo(map);;
@@ -267,6 +338,16 @@ $(function() {
         client.on( "complete", function(client, args) {
             zeroFeedback( client.htmlBridge );
         });
+    });
+
+    // handle create-geojson click events
+    $('#create-geojson').on( 'click' , startLightBox );
+
+    $('button#cancel').on( 'click', endLightBox );
+
+    $('button#add').on( 'click', function(evt){
+        var is_valid = addGeoms();
+        if( is_valid) endLightBox();
     });
 
     // Add in a layer to overlay the tile bounds of the google grid
