@@ -59,33 +59,6 @@ function endLightBox(){
 
 }
 
-function addGeoms() {
-
-    var data = $('.ocontainer textarea').val();
-
-    // QC as JSON
-    try{
-        data = JSON.parse( data );
-    } catch(err){
-        if( /unexpected token/i.test(err.message) ){
-            alert( "That's not JSON dude!" );
-        }
-        else {
-            alert( "Something doesn't smell right about that JSON" );
-        }
-        return false;
-    }
-
-    /* 
-    **  try adding it as a layer
-    **  by trigger draw:event
-    */
-    var glayer = new L.geoJson( data );
-    map.fire( 'draw:created', { layer: glayer } )
-    return true;
-    
-}
-
 function addLayer(layer, name, zIndex, on) {
     if (on) {
         layer.setZIndex(zIndex).addTo(map);;
@@ -351,8 +324,8 @@ $(function() {
     $('button#cancel').on( 'click', endLightBox );
 
     $('button#add').on( 'click', function(evt){
-        var is_valid = addGeoms();
-        if( is_valid) endLightBox();
+        // nothing happens here, just a hook
+        endLightBox();
     });
 
     // Add in a layer to overlay the tile bounds of the google grid
