@@ -163,6 +163,8 @@ html, body, #map {
     box-shadow: inset 0 4px 4px 0 rgba(255,255,255,0.5);
     border: 0px;
     color: white;
+    padding: 5px;
+    margin-bottom: 10px;
 }
 .ocontainer #submit-buttons button:hover{
     -moz-transform: scale(1.1);
