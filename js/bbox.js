@@ -196,7 +196,15 @@ $(function() {
     });
     map.addControl(drawControl);
 
-    var bounds = new L.Rectangle(map.getBounds(),
+    /*
+    **
+    **  create bounds layer
+    **  and default it at first
+    **  to draw on null island
+    **  so it's not seen onload
+    **
+    */
+    var bounds = new L.Rectangle(new L.LatLngBounds([0.0,0.0],[0.0,0.0]),
         {
             fill : false,
             opacity : 1.0,
