@@ -116,6 +116,21 @@ html, body, #map {
   transition: background-position 0.1s linear 0s;
 }
 
+.leaflet-sidebar textarea{
+    height: 95%;
+    width: 100%;
+    border: 1;
+    padding: 2em;
+    resize: none;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.leaflet-sidebar button{
+   font-size: large;
+}
+
 
 .overlay {
     position:absolute;

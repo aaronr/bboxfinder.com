@@ -1,4 +1,4 @@
-var map = null;
+var map, sidebar = null;
 
 /*
 **
@@ -122,7 +122,7 @@ function addLayer(layer, name, zIndex, on) {
 
 function addGeoJson() {
 
-    var data = $('.ocontainer textarea').val();
+    var data = $('.leaflet-sidebar textarea').val();
 
     // QC as JSON
     try{
@@ -170,7 +170,8 @@ function addGeoJson() {
         // create payload event object to pass to L.FeatureGroup
         var event_obj = {
             layer : lyr ,
-            layerType : null
+            layerType : null,
+            geojson: true
         };
 
         // sniff the feature.geometry type and coerce to L.Draw types
@@ -270,6 +271,12 @@ $(function() {
     map = L.mapbox.map('map', 'examples.map-9ijuk24y')
         .setView([48, -122], 5);
 
+    sidebar = L.control.sidebar('sidebar', {
+        position: 'right'
+    });
+    
+    map.addControl(sidebar);
+
     // Initialize the FeatureGroup to store editable layers
     var drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
@@ -309,21 +316,41 @@ $(function() {
         bounds.setBounds(drawnItems.getBounds())
         $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
         $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+        if (!e.geojson &&
+            !((drawnItems.getLayers().length == 1) && (drawnItems.getLayers()[0] instanceof L.Marker))) {
+            map.fitBounds(bounds.getBounds());
+        } else {
+            if ((drawnItems.getLayers().length == 1) && (drawnItems.getLayers()[0] instanceof L.Marker)) {
+                map.panTo(drawnItems.getLayers()[0].getLatLng());
+            }
+        }
     });
     
     map.on('draw:deleted', function (e) {
         e.layers.eachLayer(function (l) {
             drawnItems.removeLayer(l);
         });
-        bounds.setBounds(drawnItems.getBounds())
-        $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
-        $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+        if (drawnItems.getLayers().length > 0 &&
+            !((drawnItems.getLayers().length == 1) && (drawnItems.getLayers()[0] instanceof L.Marker))) {
+            bounds.setBounds(drawnItems.getBounds())
+            $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
+            $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+            map.fitBounds(bounds.getBounds());
+        } else {
+            bounds.setBounds(new L.LatLngBounds([0.0,0.0],[0.0,0.0]));
+            $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
+            $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+            if (drawnItems.getLayers().length == 1) {
+                map.panTo(drawnItems.getLayers()[0].getLatLng());
+            }
+        }
     });
     
     map.on('draw:edited', function (e) {
         bounds.setBounds(drawnItems.getBounds())
         $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
         $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+        map.fitBounds(bounds.getBounds());
     });
     
     $('#zoomlevel').val(map.getZoom().toString());
@@ -432,13 +459,19 @@ $(function() {
     });
 
     // handle create-geojson click events
-    $('#create-geojson').on( 'click' , lightBox.startLightBox );
-
-    $('button#cancel').on( 'click', lightBox.endLightBox );
+    $('#create-geojson').on( 'click' , function(){
+        sidebar.show();
+    });
 
     $('button#add').on( 'click', function(evt){
         var is_valid = addGeoJson();
-        if( is_valid ) endLightBox();
+        if (is_valid) {
+            sidebar.hide();
+            map.fitBounds(bounds.getBounds());
+        }
+    });
+    $('button#clear').on( 'click', function(evt){
+        $('.leaflet-sidebar textarea').val('');
     });
 
     // Add in a layer to overlay the tile bounds of the google grid

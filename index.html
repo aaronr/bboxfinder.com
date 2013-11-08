@@ -6,6 +6,7 @@
     
     <link rel="stylesheet" href="css/maps/leaflet.css" />
     <link rel="stylesheet" href="css/maps/leaflet.draw.css" />
+    <link rel="stylesheet" href="css/maps/leaflet.sidebar.css" />
     <link rel="stylesheet" href="css/maps/mapbox.standalone.css" />
     <link rel="stylesheet" href="css/bbox.css" />
     
@@ -13,6 +14,7 @@
     <script src="js/libs/ZeroClipboard.min.js"></script>
     <script src="js/maps/leaflet.js"></script>
     <script src="js/maps/leaflet.draw.js"></script>
+    <script src="js/maps/leaflet.sidebar.js"></script>
     <script src="js/maps/mapbox.standalone.js"></script>
     <script src="js/bbox.js"></script>
    
@@ -23,6 +25,11 @@
         <li id="create-geojson"><a href="#" class="">+ GeoJSON</a></li>
     </ul>
     <div id="map"></div>
+    <div id="sidebar">
+      <button id="add">Add</button>
+      <button id="clear">Clear</button>
+      <textarea ></textarea>
+    </div>
     <div id="wgslabel">
         WGS84
     </div>
