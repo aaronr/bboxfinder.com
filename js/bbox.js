@@ -39,7 +39,7 @@ var FormatSniffer = (function () {  // execute immediately
 
 
         this.regExes = {
-            ogr2ogrExtent : /Extent\:\s\((.*)\)/ ,
+            ogrinfoExtent : /Extent\:\s\((.*)\)/ ,
             bbox :  /^\(([\s|\-|0-9]*\.[0-9]*,[\s|\-|0-9]*\.[0-9]*,[\s|\-|0-9]*\.[0-9]*,[\s|\-|0-9]*\.[0-9]*)\)$/
         };
         this.data = options.data || ""; 
@@ -55,8 +55,8 @@ var FormatSniffer = (function () {  // execute immediately
         return this._sniffFormat(); 
     };
 
-    FormatSniffer.prototype._is_ogr2ogr = function() {
-        var match = this.regExes.ogr2ogrExtent.exec( this.data.trim() );
+    FormatSniffer.prototype._is_ogrinfo = function() {
+        var match = this.regExes.ogrinfoExtent.exec( this.data.trim() );
         var extent = [];
         if( match ) {
             var pairs = match[1].split( ") - (" );
@@ -65,7 +65,7 @@ var FormatSniffer = (function () {  // execute immediately
                 extent = ( extent.concat(  [ parseFloat(coords[0].trim()), parseFloat(coords[1].trim()) ] ) );
             }
         } 
-        this.parse_type = "ogr2ogr";
+        this.parse_type = "ogrinfo";
         return extent;
     };
 
@@ -137,8 +137,8 @@ var FormatSniffer = (function () {  // execute immediately
         try {
             var next = true;
 
-            // try ogr2ogr
-            parsed_data = this._is_ogr2ogr()
+            // try ogrinfo
+            parsed_data = this._is_ogrinfo()
             if ( parsed_data.length > 0 ){
                next = false; 
             }
@@ -267,7 +267,7 @@ var FormatSniffer = (function () {  // execute immediately
                     }
             } ,
 
-            ogr2ogr : function( data ) {
+            ogrinfo : function( data ) {
                     var lBounds = this._formatHandler.get_leaflet_bounds( data );
                     // create a rectangle layer
                     var lyr = new L.Rectangle( lBounds );    
