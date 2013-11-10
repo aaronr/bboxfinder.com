@@ -37,8 +37,13 @@ var FormatSniffer = (function () {  // execute immediately
             return new FormatSniffer(options);
         }
 
+
+        this.regExes = {
+            ogr2ogrExtent : /Extent\:\s\((.*)\)/ ,
+            bbox :  /^\(([\s|\-|0-9]*\.[0-9]*,[\s|\-|0-9]*\.[0-9]*,[\s|\-|0-9]*\.[0-9]*,[\s|\-|0-9]*\.[0-9]*)\)$/
+        };
         this.data = options.data || ""; 
-        
+        this.parse_type = null; 
     };
 
     /*
@@ -50,65 +55,137 @@ var FormatSniffer = (function () {  // execute immediately
         return this._sniffFormat(); 
     };
 
-    FormatSniffer.prototype._sniffFormat = function () {
-        
-        var fail = false;
-        var parse_type = null;
-        try {
+    FormatSniffer.prototype._is_ogr2ogr = function() {
+        var match = this.regExes.ogr2ogrExtent.exec( this.data.trim() );
+        var extent = [];
+        if( match ) {
+            var pairs = match[1].split( ") - (" );
+            for( var indx = 0; indx < pairs.length; indx ++ ){
+                var coords = pairs[ indx ].trim().split(",");
+                extent = ( extent.concat(  [ parseFloat(coords[0].trim()), parseFloat(coords[1].trim()) ] ) );
+            }
+        } 
+        this.parse_type = "ogr2ogr";
+        return extent;
+    };
 
+    FormatSniffer.prototype._is_normal_bbox = function() {
+        var match = this.regExes.bbox.exec( this.data.trim() );
+        var extent = [];
+        if( match ) {
+            var bbox = match[1].split( "," );
+            for( var indx = 0; indx < bbox.length; indx ++ ){
+                var coord = bbox[ indx ].trim();
+                extent = ( extent.concat(  [ parseFloat(coord) ] ) );
+            }
+        }
+        this.parse_type = "bbox";
+        return extent;
+    };
+
+    FormatSniffer.prototype._is_geojson = function() {
+        try {
             // try JSON
             var json = JSON.parse( this.data );
 
             // try GeoJSON
             var parsed_data = new L.geoJson( json )
 
-            // check for multipart, unsupported for now
-            parsed_data.getLayers().forEach( function( lyr, indx ){
+        } catch ( err ) {
 
-                if( /multi/i.test( lyr.feature.geometry.type ) ) {
-                    throw new Error( "Multipart GeoJson is not supported yet" );
+            return null;
+
+        }
+
+        // check for multipart, unsupported for now
+        parsed_data.getLayers().forEach( function( lyr, indx ){
+
+            if( /multi/i.test( lyr.feature.geometry.type ) ) {
+                throw new Error( "Multipart GeoJson is not supported yet" );
+            }
+
+        });
+
+        this.parse_type = "geojson";
+        return parsed_data;
+    };
+
+    FormatSniffer.prototype._is_wkt = function() {
+        if( this.data === "" ){
+            throw new Error( "empty -- nothing to parse" );
+        } 
+
+        try {
+            var parsed_data = new Wkt.Wkt( this.data );
+        } catch ( err ) {
+            return null;
+        }
+
+        // check for multipart, unsupported for now
+        if ( /multi/i.test( parsed_data.type ) ){
+            throw new Error( "Multipart WKT is not supported yet" );
+        }
+
+        this.parse_type = "wkt";
+        return parsed_data;
+    };
+
+    FormatSniffer.prototype._sniffFormat = function () {
+        
+        var parsed_data = null;
+        var fail = false;
+        try {
+            var next = true;
+
+            // try ogr2ogr
+            parsed_data = this._is_ogr2ogr()
+            if ( parsed_data.length > 0 ){
+               next = false; 
+            }
+
+            // try normal bbox 
+            if ( next ) {
+                parsed_data = this._is_normal_bbox();
+                if ( parsed_data.length > 0 ) next = false; 
+            }
+
+            // try GeoJSON
+            if ( next ) {
+                parsed_data = this._is_geojson();
+                if ( parsed_data )  next = false;
+            }
+
+            // try WKT
+            if ( next ) {
+                parsed_data = this._is_wkt();
+                if ( parsed_data ) next = false;
+            }
+
+            // no matches, throw error
+            if ( next ) {
+                fail = true;
+                throw {
+                    "name" :  "NoTypeMatchError" ,
+                    "message" : "The data is not a recognized format:\n \
+                    1. og2ogr extent output\n \
+                    2. bbox as (xMin,yMin,xMax,yMax )\n \
+                    3. GeoJSON\n \
+                    4. WKT\n\n "
                 }
-
-            });
-
-            parse_type = "geojson";
+            }
+           
 
         } catch(err) {
 
-            try {
+            alert( "Your paste is not parsable:\n" + "< " +err.message+ " >" );
+            fail = true;
 
-                // if multipart error message, pass it on
-                if ( /multipart/i.test( err.message ) ){
-                    throw new Error( err );
-                }
-
-                // try WKT 
-                if( this.data !== "" ){
-                    var parsed_data = new Wkt.Wkt( this.data );
-                } 
-                else {
-                    throw new Error( "empty -- nothing to parse" );
-                }
-
-                // check for multipart, unsupported for now
-                if ( /multi/i.test( parsed_data.type ) ){
-                    throw new Error( "Multipart WKT is not supported yet" );
-                }
-
-                parse_type = "wkt";
-
-            } catch(err) {
-
-                alert( "Your paste is not parsable as GeoJSON or WKT:\n" + "< " +err.message+ " >" );
-                fail = true;
-
-            }
         }
 
         // delegate to format handler
         if ( !fail ){
 
-            this._formatHandler[ parse_type ].call(  this, parsed_data );
+            this._formatHandler[ this.parse_type ].call( this, parsed_data );
 
         } 
         
@@ -153,6 +230,18 @@ var FormatSniffer = (function () {  // execute immediately
 
             } ,
 
+
+            get_leaflet_bounds : function( data ) {
+                    /*
+                    **  data comes in a extent ( xMin,yMin,xMax,yMax )
+                    **  we need to swap lat/lng positions
+                    **  because leaflet likes it hard
+                    */
+                    var sw = [ data[1], data[0] ];
+                    var ne = [ data[3], data[2] ];
+                    return new L.LatLngBounds( sw, ne );
+            } ,
+
             wkt : function( data ) {
 
                     var lyr = data.construct[data.type].call( data );
@@ -176,7 +265,28 @@ var FormatSniffer = (function () {  // execute immediately
                         map.fire( 'draw:created', evt );
 
                     }
-            } 
+            } ,
+
+            ogr2ogr : function( data ) {
+                    var lBounds = this._formatHandler.get_leaflet_bounds( data );
+                    // create a rectangle layer
+                    var lyr = new L.Rectangle( lBounds );    
+                    var evt = this._formatHandler.coerce( lyr, 'polygon' );
+
+                    // call L.Draw.Feature.prototype._fireCreatedEvent
+                    map.fire( 'draw:created', evt );
+            } ,
+
+            bbox : function( data ) {
+                    var lBounds = this._formatHandler.get_leaflet_bounds( data );
+                    // create a rectangle layer
+                    var lyr = new L.Rectangle( lBounds );    
+                    var evt = this._formatHandler.coerce( lyr, 'polygon' );
+
+                    // call L.Draw.Feature.prototype._fireCreatedEvent
+                    map.fire( 'draw:created', evt );
+            }
+        
 
     };
 
