@@ -167,7 +167,7 @@ var FormatSniffer = (function () {  // execute immediately
                 throw {
                     "name" :  "NoTypeMatchError" ,
                     "message" : "The data is not a recognized format:\n \
-                    1. og2ogr extent output\n \
+                    1. ogrinfo extent output\n \
                     2. bbox as (xMin,yMin,xMax,yMax )\n \
                     3. GeoJSON\n \
                     4. WKT\n\n "
@@ -177,7 +177,7 @@ var FormatSniffer = (function () {  // execute immediately
 
         } catch(err) {
 
-            alert( "Your paste is not parsable:\n" + "< " +err.message+ " >" );
+            alert( "Your paste is not parsable:\n"  + err.message  );
             fail = true;
 
         }
