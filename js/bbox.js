@@ -164,14 +164,19 @@ var FormatSniffer = (function () {  // execute immediately
             // no matches, throw error
             if ( next ) {
                 fail = true;
-                throw {
-                    "name" :  "NoTypeMatchError" ,
-                    "message" : "The data is not a recognized format:\n \
-                    1. ogrinfo extent output\n \
-                    2. bbox as (xMin,yMin,xMax,yMax )\n \
-                    3. GeoJSON\n \
-                    4. WKT\n\n "
-                }
+/* 
+**  sorry, this block needs to be left aligned
+**  to make the alert more readable
+**  which means, we probably shouldn't use alerts ;-)
+*/ 
+throw {
+"name" :  "NoTypeMatchError" ,
+"message" : "The data is not a recognized format:\n \
+1. ogrinfo extent output\n \
+2. bbox as (xMin,yMin,xMax,yMax )\n \
+3. GeoJSON\n \
+4. WKT\n\n "
+}
             }
            
 
