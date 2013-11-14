@@ -6,7 +6,7 @@ html, body, #map {
 } 
 #wgslabel {
    font-size: small;
-   left: 157px;
+   left: 50px;
    position: absolute;
    bottom: 126px;
    background-color:black;
@@ -15,7 +15,7 @@ html, body, #map {
 }
 #projlabel {
    font-size: small;
-   left: 542px;
+   left: 440px;
    position: absolute;
    bottom: 126px;
    background-color:black;
