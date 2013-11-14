@@ -620,7 +620,7 @@ $(function() {
         proj4defs = data;
         var autocompdata = [];
         $.each( data, function( key, val ) {
-            autocompdata.push({label:key,value:key})
+            autocompdata.push({label:key+'-'+val[0],value:key})
         });
         $( "#projection" ).autocomplete({
             source: autocompdata,
