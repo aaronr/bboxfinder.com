@@ -8,35 +8,42 @@
     <link rel="stylesheet" href="css/maps/leaflet.draw.css" />
     <link rel="stylesheet" href="css/maps/leaflet.sidebar.css" />
     <link rel="stylesheet" href="css/maps/mapbox.standalone.css" />
+    <link rel="stylesheet" href="css/libs/ui-lightness/jquery-ui-1.10.3.custom.css" />
     <link rel="stylesheet" href="css/bbox.css" />
     
     <script src="js/libs/jquery-1.9.1.min.js"></script>
+    <script src="js/libs/jquery-ui-1.10.3.custom.js"></script>
     <script src="js/libs/ZeroClipboard.min.js"></script>
     <script src="js/maps/leaflet.js"></script>
     <script src="js/maps/leaflet.draw.js"></script>
     <script src="js/maps/leaflet.sidebar.js"></script>
     <script src="js/maps/mapbox.standalone.js"></script>
     <script src="js/maps/wkt.parser.js"></script>
+    <script src="js/maps/proj4-src.js"></script>
+    <script src="js/maps/proj4leaflet.js"></script>
     <script src="js/maps/test.runner.js"></script>
     <script src="js/bbox.js"></script>
    
 </head>
 <body>
     <a href="https://github.com/aaronr/bboxfinder.com"><img style="position: absolute; top: 0; right: 0; border: 0; z-index:3000; max-hight:100px; max-width:100px;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+    <ul id="map-ui-proj">
+        <li><label id="projection_label" for="projection">EPSG: </label><input id="projection" size="6"/></li>
+    </ul>
     <ul id="map-ui">
         <li id="create-geojson"><a href="#" class="">+ Feature</a></li>
     </ul>
     <div id="map"></div>
-    <div id="sidebar">
+    <div id="rsidebar">
       <button id="add">Add</button>
       <button id="clear">Clear</button>
       <textarea placeholder="Paste GeoJSON, WKT, ogrinfo extent output or a bbox in the format (xMin,yMin,xMax,yMax)" title="Paste It!"></textarea>
     </div>
-    <div id="wgslabel">
-        WGS84
+    <div id="lsidebar">
     </div>
-    <div id="smerclabel">
-        Spherical Mercator
+    <div id="wgslabel">
+    </div>
+    <div id="projlabel">
     </div>
     <div id="bbounds">
         <img id="boxboundsbtn" data-clipboard-target="boxbounds" src="/images/copy.png" style="vertical-align:bottom;height:18px;"><input type="textarea" size= "45" id="boxbounds" name="boxbounds" value="Box Bounds" /><input type="textarea" size="5" class="bboxlabel" value="Box" style="text-align:center"/><input type="textarea" size= "55" id="boxboundsmerc" name="boxboundsmerc" value="Box Bounds" /><img id="boxboundsmercbtn" data-clipboard-target="boxboundsmerc" src="/images/copy.png" style="vertical-align:bottom;height:18px;">

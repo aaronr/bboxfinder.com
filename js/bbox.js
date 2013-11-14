@@ -1,4 +1,4 @@
-var map, sidebar, drawControl, drawnItems = null;
+var map, rsidebar, lsidebar, drawControl, drawnItems, proj4defs = null;
 
 
 /*
@@ -401,11 +401,17 @@ $(function() {
     map = L.mapbox.map('map', 'examples.map-9ijuk24y')
         .setView([48, -122], 5);
 
-    sidebar = L.control.sidebar('sidebar', {
+    rsidebar = L.control.sidebar('rsidebar', {
         position: 'right'
     });
     
-    map.addControl(sidebar);
+    map.addControl(rsidebar);
+
+    lsidebar = L.control.sidebar('lsidebar', {
+        position: 'left'
+    });
+    
+    map.addControl(lsidebar);
 
     // Initialize the FeatureGroup to store editable layers
     drawnItems = new L.FeatureGroup();
@@ -590,14 +596,14 @@ $(function() {
 
     // handle create-geojson click events
     $('#create-geojson').on( 'click' , function(){
-        sidebar.show();
+        rsidebar.show();
     });
 
     $('button#add').on( 'click', function(evt){
         var sniffer = FormatSniffer( { data :  $('.leaflet-sidebar textarea').val() } );
         var is_valid = sniffer.sniff();
         if (is_valid) {
-            sidebar.hide();
+            rsidebar.hide();
             map.fitBounds(bounds.getBounds());
         }
     });
@@ -609,6 +615,27 @@ $(function() {
     var tiles = new L.tileLayer('/images/tile.png', {});
     addLayer(tiles, 'Tile Grid', 10, false)
 
-    
+    // Test getting the proj strings
+    $.getJSON( "proj/proj4defs.json").done(function( data ) {
+        proj4defs = data;
+        var autocompdata = [];
+        $.each( data, function( key, val ) {
+            autocompdata.push({label:key,value:key})
+        });
+        $( "#projection" ).autocomplete({
+            source: autocompdata,
+            minLength: 3,
+            select: function( event, ui ) {
+                $('#projlabel').text('EPSG:'+ ui.item.value +' - ' + proj4defs[ui.item.value][0]);
+            }
+        //}).val('3857').data('autocomplete')._trigger('select');
+        }).val('3857');
+        // Set labels for output... left always 4326, right is proj selection
+        $('#wgslabel').text('EPSG:4326 - ' + proj4defs['4326'][0]);
+        $('#projlabel').text('EPSG:3857 - ' + proj4defs['3857'][0]);
+    }).fail(function( jqxhr, textStatus, error ) {
+        var err = textStatus + ", " + error;
+        console.log( "Request Failed: " + err );
+    });
 });
 

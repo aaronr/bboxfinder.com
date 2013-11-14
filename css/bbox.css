@@ -9,13 +9,17 @@ html, body, #map {
    left: 157px;
    position: absolute;
    bottom: 126px;
+   background-color:black;
+   color:white;
    z-index: 10000;
 }
-#smerclabel {
+#projlabel {
    font-size: small;
    left: 542px;
    position: absolute;
    bottom: 126px;
+   background-color:black;
+   color:white;
    z-index: 10000;
 }
 #bbounds {
@@ -60,6 +64,53 @@ html, body, #map {
    color:white;
 } 
 
+
+#map-ui-proj {
+    position: absolute;
+    top: 370px;
+    left: 10px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 100;
+}
+
+#map-ui-proj a {
+    font: normal 13px/18px 'Helvetica Neue', Helvetica, sans-serif;
+    background: #FFF;
+    color: #3C4E5A;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #BBB;
+    border-bottom-width: 0;
+    min-width: 75px;
+    padding: 2px;
+    text-decoration: none;
+    text-align: center;
+}
+
+#map-ui-proj a:hover {
+    background: #ECF5FA;
+}
+
+#map-ui-proj li:last-child a {
+    border-bottom-width: 1px;
+    -webkit-border-radius: 0 0 3px 3px;
+    border-radius: 0 0 3px 3px;
+}
+
+#map-ui-proj li:first-child a {
+    -webkit-border-radius: 3px 3px 0 0;
+    border-radius: 3px 3px 0 0;
+}
+
+#map-ui-proj a.active {
+    background: #3887BE;
+    border-color: #3887BE;
+    border-top-color: #FFF;
+    color: #FFF;
+}
 
 #map-ui {
     position: absolute;
@@ -131,3 +182,15 @@ html, body, #map {
    font-size: large;
 }
 
+.ui-autocomplete {
+    max-height: 180px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+/* IE 6 doesn't support max-height
+ * we use height instead, but this forces the menu to always be this tall
+ */
+* html .ui-autocomplete {
+    height: 180px;
+}
