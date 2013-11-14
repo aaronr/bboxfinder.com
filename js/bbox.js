@@ -1,5 +1,10 @@
-var map, rsidebar, lsidebar, drawControl, drawnItems, proj4defs = null;
+var map, rsidebar, lsidebar, drawControl, drawnItems = null;
 
+// Where we keep the big list of proj defs from the server
+var proj4defs = null;
+// Where we keep the proj objects we are using in this session
+var projdefs = {"4326":L.CRS.EPSG4326, "3857":L.CRS.EPSG3857};
+var currentproj = "3857";
 
 /*
 **
@@ -350,8 +355,17 @@ function formatBounds(bounds, proj, tool) {
         xmax = northeast.lng.toFixed(6);
         ymax = northeast.lat.toFixed(6);
     } else {
-        southwest = L.CRS.EPSG3857.project(southwest)
-        northeast = L.CRS.EPSG3857.project(northeast)
+        var proj_to_use = null;
+        if (typeof(projdefs[proj]) !== 'undefined') {
+            // we have it already, then grab it and use it...
+            proj_to_use = projdefs[proj];
+        } else {
+            // We have not used this one yet... make it and store it...
+            projdefs[proj] = new L.Proj.CRS(proj, proj4defs[proj][1]);
+            proj_to_use = projdefs[proj];
+        }
+        southwest = proj_to_use.project(southwest)
+        northeast = proj_to_use.project(northeast)
         xmin = southwest.x.toFixed(4);
         ymin = southwest.y.toFixed(4);
         xmax = northeast.x.toFixed(4);
@@ -371,7 +385,16 @@ function formatPoint(point, proj, tool) {
         x = point.lng.toFixed(6);
         y = point.lat.toFixed(6);
     } else {
-        point = L.CRS.EPSG3857.project(point)
+        var proj_to_use = null;
+        if (typeof(projdefs[proj]) !== 'undefined') {
+            // we have it already, then grab it and use it...
+            proj_to_use = projdefs[proj];
+        } else {
+            // We have not used this one yet... make it and store it...
+            projdefs[proj] = new L.Proj.CRS(proj, proj4defs[proj][1]);
+            proj_to_use = projdefs[proj];
+        }
+        point = proj_to_use.project(point)
         x = point.x.toFixed(4);
         y = point.y.toFixed(4);
     }
@@ -397,6 +420,9 @@ $(function() {
     **
     */
     $('input[type="textarea"]').on( 'click', function( evt ) { this.select() } );
+
+    // Have to init the projection input box as it is used to format the initial values
+    $( "#projection" ).val(currentproj);
 
     map = L.mapbox.map('map', 'examples.map-9ijuk24y')
         .setView([48, -122], 5);
@@ -451,7 +477,7 @@ $(function() {
         drawnItems.addLayer(e.layer);
         bounds.setBounds(drawnItems.getBounds())
         $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
-        $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+        $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),currentproj,'gdal'));
         if (!e.geojson &&
             !((drawnItems.getLayers().length == 1) && (drawnItems.getLayers()[0] instanceof L.Marker))) {
             map.fitBounds(bounds.getBounds());
@@ -470,12 +496,12 @@ $(function() {
             !((drawnItems.getLayers().length == 1) && (drawnItems.getLayers()[0] instanceof L.Marker))) {
             bounds.setBounds(drawnItems.getBounds())
             $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
-            $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+            $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),currentproj,'gdal'));
             map.fitBounds(bounds.getBounds());
         } else {
             bounds.setBounds(new L.LatLngBounds([0.0,0.0],[0.0,0.0]));
             $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
-            $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+            $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),currentproj,'gdal'));
             if (drawnItems.getLayers().length == 1) {
                 map.panTo(drawnItems.getLayers()[0].getLatLng());
             }
@@ -485,30 +511,30 @@ $(function() {
     map.on('draw:edited', function (e) {
         bounds.setBounds(drawnItems.getBounds())
         $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
-        $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+        $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),currentproj,'gdal'));
         map.fitBounds(bounds.getBounds());
     });
     
     $('#zoomlevel').val(map.getZoom().toString());
     $('#mapbounds').val(formatBounds(map.getBounds(),'4326','gdal'));
-    $('#mapboundsmerc').val(formatBounds(map.getBounds(),'3857','gdal'));
+    $('#mapboundsmerc').val(formatBounds(map.getBounds(),currentproj,'gdal'));
     $('#center').val(formatPoint(map.getCenter(),'4326','gdal'));
-    $('#centermerc').val(formatPoint(map.getCenter(),'3857','gdal'));
+    $('#centermerc').val(formatPoint(map.getCenter(),currentproj,'gdal'));
     $('#boxbounds').val(formatBounds(bounds.getBounds(),'4326','gdal'));
-    $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),'3857','gdal'));
+    $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),currentproj,'gdal'));
 
     map.on('mousemove', function(e) {
         $('#mousepos').val(formatPoint(e.latlng,'4326','gdal'));
-        $('#mouseposmerc').val(formatPoint(e.latlng,'3857','gdal'));
+        $('#mouseposmerc').val(formatPoint(e.latlng,currentproj,'gdal'));
         $('#mapbounds').val(formatBounds(map.getBounds(),'4326','gdal'));
-        $('#mapboundsmerc').val(formatBounds(map.getBounds(),'3857','gdal'));
+        $('#mapboundsmerc').val(formatBounds(map.getBounds(),currentproj,'gdal'));
         $('#center').val(formatPoint(map.getCenter(),'4326','gdal'));
-        $('#centermerc').val(formatPoint(map.getCenter(),'3857','gdal'));
+        $('#centermerc').val(formatPoint(map.getCenter(),currentproj,'gdal'));
     });
     map.on('zoomend', function(e) {
         $('#zoomlevel').val(map.getZoom().toString());
         $('#mapbounds').val(formatBounds(map.getBounds(),'4326','gdal'));
-        $('#mapboundsmerc').val(formatBounds(map.getBounds(),'3857','gdal'));
+        $('#mapboundsmerc').val(formatBounds(map.getBounds(),currentproj,'gdal'));
     });
 
     var zeroFeedback = function( target ){
@@ -626,9 +652,14 @@ $(function() {
             source: autocompdata,
             minLength: 3,
             select: function( event, ui ) {
+                // Update all the proj windows
                 $('#projlabel').text('EPSG:'+ ui.item.value +' - ' + proj4defs[ui.item.value][0]);
+                currentproj = ui.item.value;
+                $('#boxboundsmerc').val(formatBounds(bounds.getBounds(),currentproj,'gdal'));
+                $('#mouseposmerc').val(formatPoint(new L.LatLng(0, 0),currentproj,'gdal'));
+                $('#mapboundsmerc').val(formatBounds(map.getBounds(),currentproj,'gdal'));
+                $('#centermerc').val(formatPoint(map.getCenter(),currentproj,'gdal'));
             }
-        //}).val('3857').data('autocomplete')._trigger('select');
         }).val('3857');
         // Set labels for output... left always 4326, right is proj selection
         $('#wgslabel').text('EPSG:4326 - ' + proj4defs['4326'][0]);
