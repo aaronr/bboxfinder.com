@@ -46,7 +46,7 @@
 		.done( function( json_data ) {
 			self.run_this_mother.call( self, json_data );
 		})
-		fail( function( error ) {
+		.fail( function( error ) {
 			console.log( "The test data didn't load: ", error );
 		});
 
@@ -79,7 +79,7 @@
 
 			this.test_parsing( data, json_data );
 			this.test_add2map( json_data );
-			//this.test_deletable( json_data );
+			this.test_deletable( json_data );
 
 			this.tear_down();
 		}
@@ -110,25 +110,22 @@
 			}
 		});
 
-		// loop through this toolbars featureGroup, delete layers
-		if ( !toolbar._activeMode ) {
-			toolbar._modes['remove'].handler.fire( 'enabled', { 'handler' : 'remove' } ); // enable deletable
-		}
-		for( var indx in toolbar.options['featureGroup']._layers ) {
-			try {
-				var lyr = toolbar.options['featureGroup']._layers[indx];
-				lyr.fire( 'click' ); // triggers delete
-			}
-			catch ( err ){
-				console.error( "[ DELETE TEST FAIL ]: ", err.message, identifier );
-			}
-		}
-		// disable deletable
-		/*
-		setTimeout( function(){
-			toolbar._modes['remove'].handler.fire( 'disabled', { 'handler' : 'remove' } ); 
-		}, 2000 );
-		*/
+
+        // loop through this toolbars featureGroup, delete layers
+        if ( !toolbar._activeMode ) {
+            toolbar._modes['remove'].button.click(); // enable deletable
+        }
+        for( var indx in toolbar.options['featureGroup']._layers ) {
+            try {
+                var lyr = toolbar.options['featureGroup']._layers[indx];
+                lyr.fire( 'click' ); // triggers delete
+            }
+            catch ( err ){
+                console.error( "[ DELETE TEST FAIL ]: ", err.message, identifier );
+            }
+        }
+        // WTF?
+        $('a[title="Save changes."]')[0].click();  // disable deletable
 
 	};
 

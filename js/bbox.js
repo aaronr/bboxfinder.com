@@ -1,4 +1,4 @@
-var map, sidebar, drawControl = null;
+var map, sidebar, drawControl, drawnItems = null;
 
 
 /*
@@ -408,7 +408,7 @@ $(function() {
     map.addControl(sidebar);
 
     // Initialize the FeatureGroup to store editable layers
-    var drawnItems = new L.FeatureGroup();
+    drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
     
     // Initialize the draw control and pass it the FeatureGroup of editable layers
