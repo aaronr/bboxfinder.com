@@ -439,6 +439,15 @@ $(function() {
     
     map.addControl(lsidebar);
 
+    // Add in a crosshair for the map
+    var crosshairIcon = L.icon({
+        iconUrl: 'images/crosshair.png',
+        iconSize:     [20, 20], // size of the icon
+        iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
+    });
+    crosshair = new L.marker(map.getCenter(), {icon: crosshairIcon, clickable:false});
+    crosshair.addTo(map);
+    
     // Initialize the FeatureGroup to store editable layers
     drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
@@ -524,6 +533,10 @@ $(function() {
     $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
     $('#mousepos').text(formatPoint(new L.LatLng(0, 0),'4326','gdal'));
     $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj,'gdal'));
+
+    map.on('move', function(e) {
+        crosshair.setLatLng(map.getCenter());
+    });
 
     map.on('mousemove', function(e) {
         $('#mousepos').text(formatPoint(e.latlng,'4326','gdal'));
