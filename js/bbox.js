@@ -424,7 +424,7 @@ $(function() {
     // Have to init the projection input box as it is used to format the initial values
     $( "#projection" ).val(currentproj);
 
-    map = L.mapbox.map('map', 'examples.map-9ijuk24y').setView([0, 0], 3);
+    map = L.mapbox.map('map', 'reprojected.g9on3k93').setView([0, 0], 3);
 
     rsidebar = L.control.sidebar('rsidebar', {
         position: 'right'
