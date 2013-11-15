@@ -424,8 +424,7 @@ $(function() {
     // Have to init the projection input box as it is used to format the initial values
     $( "#projection" ).val(currentproj);
 
-    map = L.mapbox.map('map', 'examples.map-9ijuk24y')
-        .setView([48, -122], 5);
+    map = L.mapbox.map('map', 'examples.map-9ijuk24y').setView([0, 0], 3);
 
     rsidebar = L.control.sidebar('rsidebar', {
         position: 'right'
@@ -638,6 +637,11 @@ $(function() {
     // handle create-geojson click events
     $('#create-geojson').on( 'click' , function(){
         rsidebar.show();
+    });
+
+    // handle geolocation click events
+    $('#geolocation').on( 'click' , function(){
+        map.locate({setView: true, maxZoom: 8});
     });
 
     $('button#add').on( 'click', function(evt){
