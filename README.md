@@ -9,24 +9,24 @@ Helper page for finding bbox values from a map to help with interaction with too
 
 0. We have dependencies that *cannot* be installed with npm that have to be put in global client scope. These include:
 
-    jQuery
-    jQuery-ui
+    + jQuery
+    + jQuery-ui
 
 1. We have dependencies that *cannot* be installed with npm, but they can be imported ( required ) in browserify framework because we wrote them that way. These include:
 
-    bbox // main app
-    leaflet.sidebar.js
-    format_sniffer
-    wkt
-    tests
+    + bbox // main app
+    + leaflet.sidebar.js
+    + format_sniffer
+    + wkt
+    + tests
 
 2. We have dependencies that *can* be installed with npm, but they do not support being imported ( required ) in with browserify framework because the author was not thinking. This includes:
 
-    leaflet-draw
+    + leaflet-draw
 
 3. We have dependencies that can be installed with npm AND they can be imported ( required ) in nodejs framework
 
-    zeroclipboard
+    + zeroclipboard
 
 4. Non-require libraries such as:
     `jQuery.v1.9.1 and jQueryUI.v.1.10.3` will be built to js/dist/<env>/libs.js in minified form
