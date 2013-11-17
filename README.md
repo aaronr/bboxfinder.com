@@ -29,9 +29,9 @@ Helper page for finding bbox values from a map to help with interaction with too
     + zeroclipboard
 
 4. Non-require libraries such as:
-    `jQuery.v1.9.1 and jQueryUI.v.1.10.3` will be built to js/dist/<env>/libs.js in minified form
+    `jQuery.v1.9.1 and jQueryUI.v.1.10.3` will be built to js/dist/ENV/libs.js in minified form
 
-5. NodeJS required libraries ( including our app modules) will be built to js/dist/<env>/site.js in both minified and src form depending on <env>
+5. NodeJS required libraries ( including our app modules) will be built to js/dist/ENV/site.js in both minified and src form depending on ENV
 
 6. The Makefile shows the workflow logic
 
@@ -44,9 +44,9 @@ Helper page for finding bbox values from a map to help with interaction with too
 
 2. Install node dependencies `npm install`. This will look at the package.json file for dependencies to download
 
-3. Run `make`  to build the js/dist/<env>/files
+3. Run `make`  to build the js/dist/ENV/files
 
-4. Make sure to edit index.html and add the appropriate <env> ( prod or dev ) path for files depending if you want minified or source in the browser
+4. Make sure to edit index.html and add the appropriate ENV ( prod or dev ) path for JS files depending if you want minified or source in the browser
 
 5. Run Python server dev server: `./serve.sh`
 
