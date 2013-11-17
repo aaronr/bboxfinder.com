@@ -1,5 +1,989 @@
-!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.proj4=e():"undefined"!=typeof global?global.proj4=e():"undefined"!=typeof self&&(self.proj4=e())}(function(){var define,module,exports;
-return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var ZeroClipboard = require('zeroclipboard');
+var proj4 = require('proj4');
+var FormatSniffer = require('../format_sniffer/sniffer.js');
+
+(function( def ) { // execute immediately
+
+    if( typeof module !== 'undefined' &&
+        typeof module.exports !== 'undefined' ){
+        module.exports = def(); // class instance returned
+    }
+    else if ( typeof window !== 'undefined' ){
+        window.Bbox = def(); // class instance returned
+    }
+
+
+
+})( function() { // def
+
+    var BboxClass = function( options ) {
+        
+        options || ( options = {} );
+        if( !this || !( this instanceof BboxClass ) ){
+            return new BboxClass( options );
+        }
+
+        // this is exposed in window.map
+        // this.map
+
+        this.rsidebar = null;
+        this.lsidebar = null;
+        this.drawControl = null; 
+        this.drawnItems = null;
+
+        // Where we keep the big list of proj defs from the server
+        this.proj4defs = null;
+
+        // Where we keep the proj objects we are using in this session
+        // with a hack so we can keep this as a nodejs module for now
+        if ( typeof L !== 'undefined' ) {
+            this.projdefs = {"4326":L.CRS.EPSG4326, "3857":L.CRS.EPSG3857};
+        }
+
+        this.currentproj = "3857";
+
+    };
+
+    BboxClass.prototype.addLayer = function(layer, name, zIndex, on) {
+        if (on) {
+            layer.setZIndex(zIndex).addTo(map);;
+        } else {
+            layer.setZIndex(zIndex);
+        }
+        // Create a simple layer switcher that toggles layers on and off.
+        var ui = document.getElementById('map-ui');
+        var item = document.createElement('li');
+        var link = document.createElement('a');
+        link.href = '#';
+        if (on) {
+            link.className = 'active';
+        } else {
+            link.className = '';
+        }
+        link.innerHTML = name;
+        link.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (map.hasLayer(layer)) {
+                map.removeLayer(layer);
+                this.className = '';
+            } else {
+                map.addLayer(layer);
+                this.className = 'active';
+            }
+        };
+        item.appendChild(link);
+        ui.appendChild(item);
+    };
+
+
+    BboxClass.prototype.formatBounds = function(bounds, proj, tool) {
+        var formattedBounds = '';
+        var southwest = bounds.getSouthWest();
+        var northeast = bounds.getNorthEast();
+        var xmin = 0;
+        var xmin = 0;
+        var xmin = 0;
+        var xmin = 0;   
+        if (proj == '4326') {
+            xmin = southwest.lng.toFixed(6);
+            ymin = southwest.lat.toFixed(6);
+            xmax = northeast.lng.toFixed(6);
+            ymax = northeast.lat.toFixed(6);
+        } else {
+            var proj_to_use = null;
+            if (typeof(Bbox.projdefs[proj]) !== 'undefined') {
+                // we have it already, then grab it and use it...
+                proj_to_use = Bbox.projdefs[proj];
+            } else {
+                // We have not used this one yet... make it and store it...
+                Bbox.projdefs[proj] = new L.Proj.CRS(proj, Bbox.proj4defs[proj][1]);
+                proj_to_use = Bbox.projdefs[proj];
+            }
+            southwest = proj_to_use.project(southwest)
+            northeast = proj_to_use.project(northeast)
+            xmin = southwest.x.toFixed(4);
+            ymin = southwest.y.toFixed(4);
+            xmax = northeast.x.toFixed(4);
+            ymax = northeast.y.toFixed(4);
+        }
+        if (tool === 'gdal') {
+            formattedBounds = xmin+','+ymin+','+xmax+','+ymax;
+        } else {
+            formattedBounds = xmin+' '+ymin+' '+xmax+' '+ymax;
+        }
+        return formattedBounds
+    };
+
+    BboxClass.prototype.formatPoint = function(point, proj, tool) {
+        var formattedPoint = '';
+        if (proj == '4326') {
+            x = point.lng.toFixed(6);
+            y = point.lat.toFixed(6);
+        } else {
+            var proj_to_use = null;
+            if (typeof(Bbox.projdefs[proj]) !== 'undefined') {
+                // we have it already, then grab it and use it...
+                proj_to_use = Bbox.projdefs[proj];
+            } else {
+                // We have not used this one yet... make it and store it...
+                Bbox.projdefs[proj] = new L.Proj.CRS(proj, Bbox.proj4defs[proj][1]);
+                proj_to_use = Bbox.projdefs[proj];
+            }
+            point = proj_to_use.project(point)
+            x = point.x.toFixed(4);
+            y = point.y.toFixed(4);
+        }
+        if (tool === 'gdal') {
+            formattedBounds = x+','+y;
+        } else {
+            formattedBounds = x+' '+y;
+        }
+        return formattedBounds
+    };
+
+    BboxClass.prototype.onload_callback = function() {
+
+        // Have to init the projection input box as it is used to format the initial values
+        $( "#projection" ).val(Bbox.currentproj);
+
+        // set globally
+        window.map = L.mapbox.map('map', 'reprojected.g9on3k93').setView([0, 0], 3);
+
+        Bbox.rsidebar = L.control.sidebar('rsidebar', {
+            position: 'right'
+        });
+        
+        map.addControl(Bbox.rsidebar);
+
+        Bbox.lsidebar = L.control.sidebar('lsidebar', {
+            position: 'left'
+        });
+        
+        map.addControl(Bbox.lsidebar);
+
+        // Add in a crosshair for the map
+        var crosshairIcon = L.icon({
+            iconUrl: 'images/crosshair.png',
+            iconSize:     [20, 20], // size of the icon
+            iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
+        });
+        crosshair = new L.marker(map.getCenter(), {icon: crosshairIcon, clickable:false});
+        crosshair.addTo(map);
+        
+        // Initialize the FeatureGroup to store editable layers
+        Bbox.drawnItems = new L.FeatureGroup();
+        map.addLayer(Bbox.drawnItems);
+        
+        // Initialize the draw control and pass it the FeatureGroup of editable layers
+        Bbox.drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: Bbox.drawnItems
+            }
+        });
+        map.addControl(Bbox.drawControl);
+
+        /*
+        **
+        **  create bounds layer
+        **  and default it at first
+        **  to draw on null island
+        **  so it's not seen onload
+        **
+        */
+        var bounds = new L.Rectangle(new L.LatLngBounds([0.0,0.0],[0.0,0.0]),
+            {
+                fill : false,
+                opacity : 1.0,
+                color : '#000'
+            }
+        );
+        bounds.on('bounds-set', function( e ) {
+            // move it to the end of the parent
+            var parent = e.target._container.parentElement;
+            $( parent ).append( e.target._container ); 
+        });
+        map.addLayer(bounds)
+
+        map.on('draw:created', function (e) {
+            Bbox.drawnItems.addLayer(e.layer);
+            bounds.setBounds(Bbox.drawnItems.getBounds())
+            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
+            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+            if (!e.geojson &&
+                !((Bbox.drawnItems.getLayers().length == 1) && (Bbox.drawnItems.getLayers()[0] instanceof L.Marker))) {
+                map.fitBounds(bounds.getBounds());
+            } else {
+                if ((Bbox.drawnItems.getLayers().length == 1) && (Bbox.drawnItems.getLayers()[0] instanceof L.Marker)) {
+                    map.panTo(Bbox.drawnItems.getLayers()[0].getLatLng());
+                }
+            }
+        });
+        
+        map.on('draw:deleted', function (e) {
+            e.layers.eachLayer(function (l) {
+                Bbox.drawnItems.removeLayer(l);
+            });
+            if (Bbox.drawnItems.getLayers().length > 0 &&
+                !((Bbox.drawnItems.getLayers().length == 1) && (Bbox.drawnItems.getLayers()[0] instanceof L.Marker))) {
+                bounds.setBounds(Bbox.drawnItems.getBounds())
+                $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
+                $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+                map.fitBounds(bounds.getBounds());
+            } else {
+                bounds.setBounds(new L.LatLngBounds([0.0,0.0],[0.0,0.0]));
+                $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
+                $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+                if (Bbox.drawnItems.getLayers().length == 1) {
+                    map.panTo(Bbox.drawnItems.getLayers()[0].getLatLng());
+                }
+            }
+        });
+        
+        map.on('draw:edited', function (e) {
+            bounds.setBounds(Bbox.drawnItems.getBounds())
+            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
+            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+            map.fitBounds(bounds.getBounds());
+        });
+        
+        $('#zoomlevel').text(map.getZoom().toString());
+        $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
+        $('#mapboundsmerc').text(formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
+        $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
+        $('#centermerc').text(formatPoint(map.getCenter(),Bbox.currentproj,'gdal'));
+        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
+        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+        $('#mousepos').text(formatPoint(new L.LatLng(0, 0),'4326','gdal'));
+        $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),Bbox.currentproj,'gdal'));
+
+        map.on('move', function(e) {
+            crosshair.setLatLng(map.getCenter());
+        });
+
+        map.on('mousemove', function(e) {
+            $('#mousepos').text(formatPoint(e.latlng,'4326','gdal'));
+            $('#mouseposmerc').text(formatPoint(e.latlng,Bbox.currentproj,'gdal'));
+            $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
+            $('#mapboundsmerc').text(formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
+            $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
+            $('#centermerc').text(formatPoint(map.getCenter(),Bbox.currentproj,'gdal'));
+        });
+        map.on('zoomend', function(e) {
+            $('#zoomlevel').text(map.getZoom().toString());
+            $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
+            $('#mapboundsmerc').text(formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
+        });
+
+        var zeroFeedback = function( target ){
+
+            $(target).append( "<span id='zfeedback'>&nbsp;Copied!&nbsp;</span>" );
+
+            $('#zfeedback').css({
+                 "background-color" : "#C7C700" ,
+                 "font-stye" : "bold" ,
+                 "border-radius" : "15px" ,
+                 "padding" : "5px" ,
+                 "box-shadow" : "0px 2px 20px #000"
+            });
+
+            $(target)
+                .animate( { opacity : 0 , top : "-=100" }, 500 );
+
+            setTimeout( function(){
+                $(target).css( "opacity", 1.0 );
+                $(target).css( "background-color", "" );
+                $('#zfeedback').remove();
+            }, 700 );
+
+        }
+
+        var boxboundclip = new ZeroClipboard( $("#boxboundsbtn"), {
+            moviePath: "/swf/ZeroClipboard.swf"
+        });
+        
+        boxboundclip.on( "load", function(client) {
+            client.on( "complete", function(client, args) {
+                zeroFeedback( client.htmlBridge );
+            });
+        });
+
+        var boxboundmercclip = new ZeroClipboard( $("#boxboundsmercbtn"), {
+            moviePath: "/swf/ZeroClipboard.swf"
+        });
+        
+        boxboundmercclip.on( "load", function(client) {
+            client.on( "complete", function(client, args) {
+                zeroFeedback( client.htmlBridge );
+            });
+        });
+
+        var mapboundclip = new ZeroClipboard( $("#mapboundsbtn"), {
+            moviePath: "/swf/ZeroClipboard.swf"
+        });
+        
+        mapboundclip.on( "load", function(client) {
+            client.on( "complete", function(client, args) {
+                zeroFeedback( client.htmlBridge );
+            });
+        });
+
+        var mapboundmercclip = new ZeroClipboard( $("#mapboundsmercbtn"), {
+            moviePath: "/swf/ZeroClipboard.swf"
+        });
+        
+        mapboundmercclip.on( "load", function(client) {
+            client.on( "complete", function(client, args) {
+                zeroFeedback( client.htmlBridge );
+            });
+        });
+
+        var centerclip = new ZeroClipboard( $("#centerbtn"), {
+            moviePath: "/swf/ZeroClipboard.swf"
+        });
+        
+        centerclip.on( "load", function(client) {
+            client.on( "complete", function(client, args) {
+                zeroFeedback( client.htmlBridge );
+            });
+        });
+
+        var centermercclip = new ZeroClipboard( $("#centermercbtn"), {
+            moviePath: "/swf/ZeroClipboard.swf"
+        });
+        
+        centermercclip.on( "load", function(client) {
+            client.on( "complete", function(client, args) {
+                zeroFeedback( client.htmlBridge );
+            });
+        });
+
+        // handle create-geojson click events
+        $('#create-geojson').on( 'click' , function(){
+            Bbox.rsidebar.show();
+        });
+
+        // handle geolocation click events
+        $('#geolocation').on( 'click' , function(){
+            map.locate({setView: true, maxZoom: 8});
+        });
+
+        $('button#add').on( 'click', function(evt){
+            var sniffer = FormatSniffer( { data :  $('.leaflet-sidebar textarea').val() } );
+            var is_valid = sniffer.sniff();
+            if (is_valid) {
+                Bbox.rsidebar.hide();
+                map.fitBounds(bounds.getBounds());
+            }
+        });
+        $('button#clear').on( 'click', function(evt){
+            $('.leaflet-sidebar textarea').val('');
+        });
+
+        // Add in a layer to overlay the tile bounds of the google grid
+        var tiles = new L.tileLayer('/images/tile.png', {});
+        Bbox.self.addLayer(tiles, 'Tile Grid', 10, false)
+
+        // Test getting the proj strings
+        $.getJSON( "proj/proj4defs.json").done(function( data ) {
+            Bbox.proj4defs = data;
+            var autocompdata = [];
+            $.each( data, function( key, val ) {
+                autocompdata.push({label:key+'-'+val[0],value:key})
+            });
+            $( "#projection" ).autocomplete({
+                source: autocompdata,
+                minLength: 3,
+                select: function( event, ui ) {
+                    // Update all the proj windows
+                    $('#projlabel').text('EPSG:'+ ui.item.value +' - ' + Bbox.proj4defs[ui.item.value][0]);
+                    Bbox.currentproj = ui.item.value;
+                    $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+                    $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),Bbox.currentproj,'gdal'));
+                    $('#mapboundsmerc').text(formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
+                    $('#centermerc').text(formatPoint(map.getCenter(),Bbox.currentproj,'gdal'));
+                }
+            }).val('3857');
+            // Set labels for output... left always 4326, right is proj selection
+            $('#wgslabel').text('EPSG:4326 - ' + Bbox.proj4defs['4326'][0]);
+            $('#projlabel').text('EPSG:3857 - ' + Bbox.proj4defs['3857'][0]);
+        }).fail(function( jqxhr, textStatus, error ) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+        });
+    };
+
+    return new BboxClass();
+
+});
+
+/*
+**
+**  override L.Rectangle 
+**  to fire an event after setting
+**
+**  the base parent object L.Path
+**  includes the L.Mixin.Events
+**
+**  ensures bbox box is always
+**  the topmost SVG feature
+**
+*/
+if( typeof L !== 'undefined' ){
+    L.Rectangle.prototype.setBounds = function (latLngBounds) {
+
+        this.setLatLngs(this._boundsToLatLngs(latLngBounds));
+        this.fire( 'bounds-set' );
+    }
+}
+
+},{"../format_sniffer/sniffer.js":2,"proj4":21,"zeroclipboard":53}],2:[function(require,module,exports){
+// global dep leaflet
+// global dep Wkt
+
+(function( def ) { // execute immediately
+
+
+    if ( typeof module !== 'undefined' && 
+         typeof module.exports !== 'undefined' ) {
+
+        module.exports = def(); // return class def
+
+    }
+
+
+})(function () { // def
+
+    'use strict';
+
+    /*
+    **
+    **  constructor
+    **
+    */
+    var FormatSniffer = function( options ) {
+
+        options || ( options = {} );
+
+        if( !this || !( this instanceof FormatSniffer ) ){
+            return new FormatSniffer(options);
+        }
+
+
+        this.regExes = {
+            ogrinfoExtent : /Extent\:\s\((.*)\)/ ,
+            bbox :  /^\(([\s|\-|0-9]*\.[0-9]*,[\s|\-|0-9]*\.[0-9]*,[\s|\-|0-9]*\.[0-9]*,[\s|\-|0-9]*\.[0-9|\s]*)\)$/
+        };
+        this.data = options.data || ""; 
+        this.parse_type = null; 
+    };
+
+    /*
+    **
+    **  functions
+    **
+    */
+    FormatSniffer.prototype.sniff = function () {
+        return this._sniffFormat(); 
+    };
+
+    FormatSniffer.prototype._is_ogrinfo = function() {
+        var match = this.regExes.ogrinfoExtent.exec( this.data.trim() );
+        var extent = [];
+        if( match ) {
+            var pairs = match[1].split( ") - (" );
+            for( var indx = 0; indx < pairs.length; indx ++ ){
+                var coords = pairs[ indx ].trim().split(",");
+                extent = ( extent.concat(  [ parseFloat(coords[0].trim()), parseFloat(coords[1].trim()) ] ) );
+            }
+        } 
+        this.parse_type = "ogrinfo";
+        return extent;
+    };
+
+    FormatSniffer.prototype._is_normal_bbox = function() {
+        var match = this.regExes.bbox.exec( this.data.trim() );
+        var extent = [];
+        if( match ) {
+            var bbox = match[1].split( "," );
+            for( var indx = 0; indx < bbox.length; indx ++ ){
+                var coord = bbox[ indx ].trim();
+                extent = ( extent.concat(  [ parseFloat(coord) ] ) );
+            }
+        }
+        this.parse_type = "bbox";
+        return extent;
+    };
+
+    FormatSniffer.prototype._is_geojson = function() {
+        try {
+            // try JSON
+            var json = JSON.parse( this.data );
+
+            // try GeoJSON
+            var parsed_data = new L.geoJson( json )
+
+        } catch ( err ) {
+
+            return null;
+
+        }
+
+        this.parse_type = "geojson";
+        return parsed_data;
+    };
+
+    FormatSniffer.prototype._is_wkt = function() {
+        if( this.data === "" ){
+            throw new Error( "empty -- nothing to parse" );
+        } 
+
+        try {
+            var parsed_data = new Wkt.Wkt( this.data );
+        } catch ( err ) {
+            return null;
+        }
+
+        this.parse_type = "wkt";
+        return parsed_data;
+    };
+
+    FormatSniffer.prototype._sniffFormat = function () {
+        
+        var parsed_data = null;
+        var fail = false;
+        try {
+            var next = true;
+
+            // try ogrinfo
+            parsed_data = this._is_ogrinfo()
+            if ( parsed_data.length > 0 ){
+               next = false; 
+            }
+
+            // try normal bbox 
+            if ( next ) {
+                parsed_data = this._is_normal_bbox();
+                if ( parsed_data.length > 0 ) next = false; 
+            }
+
+            // try GeoJSON
+            if ( next ) {
+                parsed_data = this._is_geojson();
+                if ( parsed_data )  next = false;
+            }
+
+            // try WKT
+            if ( next ) {
+                parsed_data = this._is_wkt();
+                if ( parsed_data ) next = false;
+            }
+
+            // no matches, throw error
+            if ( next ) {
+                fail = true;
+/* 
+**  sorry, this block needs to be left aligned
+**  to make the alert more readable
+**  which means, we probably shouldn't use alerts
+*/ 
+throw {
+"name" :  "NoTypeMatchError" ,
+"message" : "The data is not a recognized format:\n \
+1. ogrinfo extent output\n \
+2. bbox as (xMin,yMin,xMax,yMax )\n \
+3. GeoJSON\n \
+4. WKT\n\n "
+}
+            }
+           
+
+        } catch(err) {
+
+            alert( "Your paste is not parsable:\n"  + err.message  );
+            fail = true;
+
+        }
+
+        // delegate to format handler
+        if ( !fail ){
+
+            this._formatHandler[ this.parse_type ].call( this._formatHandler, parsed_data );
+
+        } 
+        
+        return ( fail ? false : true );
+    };
+
+
+    /*
+    **  an object with functions as property names.
+    **  if we need to add another format
+    **  we can do so here as a property name
+    **  to enforce reusability
+    **
+    **  to add different formats as L.FeatureGroup layer 
+    **  so they work with L.Draw edit and delete options
+    **  we fake passing event information
+    **  and triggering draw:created for L.Draw
+    */
+    FormatSniffer.prototype._formatHandler = {
+
+
+            // coerce event objects to work with L.Draw types
+            coerce : function ( lyr, type_obj ) {
+
+                    var event_obj = {
+                        layer : lyr,
+                        layerType : null,
+                    } 
+
+                    // coerce to L.Draw types
+                    if ( /point/i.test( type_obj ) ){
+                        event_obj.layerType = "marker";
+                    }
+                    else if( /linestring/i.test( type_obj ) ){
+                        event_obj.layerType = "polyline";
+                    }
+                    else if ( /polygon/i.test( type_obj ) ){
+                        event_obj.layerType = "polygon";
+                    }
+    
+                    return event_obj;
+
+            } ,
+
+        reduce_layers : function( lyr ) {
+            var lyr_parts = []; 
+                if (  typeof lyr[ 'getLayers' ] === 'undefined' ) {  
+            return [ lyr ];
+            } 
+            else {
+            var all_layers = lyr.getLayers();
+            for( var i = 0; i < all_layers.length; i++ ){
+                lyr_parts = lyr_parts.concat( this.reduce_layers( all_layers[i] ) );    
+            }
+            }
+            return lyr_parts;
+        } ,
+
+            get_leaflet_bounds : function( data ) {
+                    /*
+                    **  data comes in an extent ( xMin,yMin,xMax,yMax )
+                    **  we need to swap lat/lng positions
+                    **  because leaflet likes it hard
+                    */
+                    var sw = [ data[1], data[0] ];
+                    var ne = [ data[3], data[2] ];
+                    return new L.LatLngBounds( sw, ne );
+            } ,
+
+            wkt : function( data ) {
+
+                    var wkt_layer = data.construct[data.type].call( data );
+                    var all_layers = this.reduce_layers( wkt_layer );
+                    for( var indx = 0; indx < all_layers.length; indx++ ) { 
+                        var lyr = all_layers[indx];
+                        var evt = this.coerce( lyr, data.type );
+
+                        // call L.Draw.Feature.prototype._fireCreatedEvent
+                        map.fire( 'draw:created', evt );
+                    }
+
+            } ,
+
+            geojson : function( geojson_layer ) {
+
+                    var all_layers = this.reduce_layers( geojson_layer );
+                    for( var indx = 0; indx < all_layers.length; indx++ ) { 
+                        var lyr = all_layers[indx];
+
+                        var geom_type = geojson_layer.getLayers()[0].feature.geometry.type;
+                        var evt = this.coerce( lyr, geom_type );
+
+                        // call L.Draw.Feature.prototype._fireCreatedEvent
+                        map.fire( 'draw:created', evt );
+                    }
+            } ,
+
+            ogrinfo : function( data ) {
+                    var lBounds = this.get_leaflet_bounds( data );
+                    // create a rectangle layer
+                    var lyr = new L.Rectangle( lBounds );    
+                    var evt = this.coerce( lyr, 'polygon' );
+
+                    // call L.Draw.Feature.prototype._fireCreatedEvent
+                    map.fire( 'draw:created', evt );
+            } ,
+
+            bbox : function( data ) {
+                    var lBounds = this.get_leaflet_bounds( data );
+                    // create a rectangle layer
+                    var lyr = new L.Rectangle( lBounds );    
+                    var evt = this.coerce( lyr, 'polygon' );
+
+                    // call L.Draw.Feature.prototype._fireCreatedEvent
+                    map.fire( 'draw:created', evt );
+            }
+        
+
+    };
+
+    return FormatSniffer; // return class def
+
+}); // end FormatSniffer
+
+
+},{}],3:[function(require,module,exports){
+window.Bbox = require('./bbox');
+window.BboxTestRunner = require('./test/test.runner.js');
+
+// kick it off
+window.onload = Bbox.onload_callback;
+
+
+},{"./bbox":1,"./test/test.runner.js":4}],4:[function(require,module,exports){
+var TEST_DATA = require("./testdata.json");
+var Bbox = require("../bbox");
+// global dependency $.jQuery
+// global dependecy Leaflet
+
+(function( definition ) { // execute immeidately
+	
+    /*
+    **
+    **  // TEST_DATA is held as attr ref
+    **  example run syntax fromm console --> BBOX_T().run_this_mother(); // that's it
+    **
+    */
+
+	if ( typeof module !== 'undefined' &&
+	     typeof module.exports !== 'undefined' ) {
+		module.exports = definition();
+	}
+	else if ( typeof window === "object" ) {
+		window.BBOX_T = definition();
+	}
+
+})( function() {
+	'use strict';
+	
+	/*
+	**
+	**  constructor
+	**
+	*/
+	var TestRunner = function( options ) {
+		options || ( options = {} );
+
+		if( !this || !(this instanceof TestRunner )){
+			return new TestRunner( options );
+		}
+
+		this.test_url = options.url || "";
+
+        this.test_data = TEST_DATA;
+
+		//this.global_setup(); // execute immediately
+	};
+
+	/*
+	** 
+	**  functions
+	**
+	*/
+	TestRunner.prototype.global_setup = function() {
+
+	    this.run_this_mother( this.test_data );
+
+        /*
+		var self = this; // hold ref to instance
+		$.ajax({
+			'url' :  this.test_url ,
+			'dataType' : 'json'
+		})
+		.done( function( json_data ) {
+			self.run_this_mother.call( self, json_data );
+		})
+		.fail( function( error ) {
+			console.log( "The test data didn't load: ", error );
+		});
+        */
+
+	};
+	
+	TestRunner.prototype.single_setup = function() {
+		this.get_layer_count();
+	};
+
+	TestRunner.prototype.tear_down = function() {
+		if( this._draw_delete_handler ){
+			this._draw_delete_handler.off('draw:deleted');
+		}
+	};
+
+	TestRunner.prototype.run_this_mother = function( json_data ) {
+		for( var key in json_data ){
+			console.log( "[ RUNNING ]: test " + json_data[key]['type'] + "->" + "simple=" + json_data[key]['simple'] );
+			var data = json_data[key]['data']; 	
+			if( json_data[key]['type'] === 'geojson' ) {
+				data = JSON.stringify( data );
+			}
+			
+			/*
+			**  run different tests
+			**  the context here is jQuery, so change
+			**  to reference the instance
+			*/
+			this.single_setup();
+
+			this.test_parsing( data, json_data );
+			this.test_add2map( json_data );
+			this.test_deletable( json_data );
+
+			this.tear_down();
+		}
+	};
+
+	TestRunner.prototype.test_deletable = function(identifier){ // TODO: this needs work
+		var toolbar = null;
+		// get the right toolbar, depending on attributes
+		for( var key in Bbox.drawControl._toolbars ){
+			var tbar = Bbox.drawControl._toolbars[key];
+			if ( !(tbar instanceof L.EditToolbar ) ){ 
+				continue;	
+			}
+
+			toolbar = tbar; // set the right one;
+		}
+
+		// create delete handler that makes sure things are deleted
+	    	this._draw_delete_handler = map.on('draw:deleted', function (e) {
+			try {
+				e.layers.eachLayer(function (l) {
+				    Bbox.drawnItems.removeLayer(l);
+				});
+				console.warn( "[ PASSED ]: test_deletable" );
+			}
+			catch ( err ) {
+				console.error( "[ DELETE TEST FAIL ]: ", err.message, identifier );
+			}
+		});
+
+
+        // loop through this toolbars featureGroup, delete layers
+        if ( !toolbar._activeMode ) {
+            toolbar._modes['remove'].button.click(); // enable deletable
+        }
+        for( var indx in toolbar.options['featureGroup']._layers ) {
+            try {
+                var lyr = toolbar.options['featureGroup']._layers[indx];
+                lyr.fire( 'click' ); // triggers delete
+            }
+            catch ( err ){
+                console.error( "[ DELETE TEST FAIL ]: ", err.message, identifier );
+            }
+        }
+        // WTF?
+        $('a[title="Save changes."]')[0].click();  // disable deletable
+
+	};
+
+	TestRunner.prototype.test_add2map = function(identifier){
+		var current_num = Object.keys( map._layers ).length;
+		if( current_num <= this.num_layers_before_parse ){
+			console.error( "[ ADD2MAP TEST FAIL ]: ", identifier );
+		}
+		else {
+			console.warn( "[ PASSED ]: test_add2map" );
+		}
+	};
+
+	TestRunner.prototype.get_layer_count = function(){
+		this.num_layers_before_parse = Object.keys( map._layers ).length;
+	};
+
+	TestRunner.prototype.test_parsing = function( data, identifier ){
+		var is_valid = FormatSniffer( { data : data } ).sniff();
+		if ( !is_valid ) {
+			console.error( "[ PARSE TEST FAIL ]: ", identifier );
+		}
+		else {
+			console.warn( "[ PASSED ]: test_parsing" );
+		}
+	};
+
+	return TestRunner; // return class def
+
+});
+
+},{"../bbox":1,"./testdata.json":5}],5:[function(require,module,exports){
+module.exports=[
+	{ 
+	  "type" : "wkt" ,
+	  "simple" : true ,
+	  "data"  : "POLYGON ((35 10, 45 45, 15 40, 10 20, 35 10), (20 30, 35 35, 30 20, 20 30))"
+	} ,
+	{
+	  "type" : "wkt" ,
+	  "simple" : false ,
+	  "data" : "MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))"
+	} ,
+	{
+	  "type" : "geojson" ,
+	  "simple" : true ,
+          "data" : { "type": "Feature", "properties": {"party": "Republican"}, "geometry": { "type": "Polygon", "coordinates": [[ [-104.05, 48.99], [-97.22,  48.98], [-96.58,  45.94], [-104.03, 45.94], [-104.05, 48.99] ]] } }
+	} ,
+	{
+	  "type" : "geojson" ,
+	  "simple" : false ,
+	  "data" : {
+		  "type": "Feature",
+		  "geometry": {
+		    "type": "MultiPolygon",
+		    "coordinates": [
+			[
+			  [
+			    [101.2, 1.2], [101.8, 1.2], [101.8, 1.8], [101.2, 1.8], [101.2, 1.2]
+			  ],
+			  [
+			    [101.2, 1.2], [101.3, 1.2], [101.3, 1.3], [101.2, 1.3], [101.2, 1.2]
+			  ],
+			  [
+			    [101.6, 1.4], [101.7, 1.4], [101.7, 1.5], [101.6, 1.5], [101.6, 1.4]
+			  ],
+			  [
+			    [101.5, 1.6], [101.6, 1.6], [101.6, 1.7], [101.5, 1.7], [101.5, 1.6]
+			  ]
+			],
+			[
+			  [
+			    [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]
+			  ],
+			  [
+			    [100.35, 0.35], [100.65, 0.35], [100.65, 0.65], [100.35, 0.65], [100.35, 0.35]
+			  ]
+			]
+		      ]
+		  },
+		  "properties": {}
+		}
+	} ,
+	{
+	  "type" : "ogrinfo" ,
+	  "simple" : true ,
+	  "data" : "Extent: (-117.623198, 23.208206) - (-82.322650, 46.182910)"
+	} ,
+	{
+	  "type" : "bbox" ,
+	  "simple" : true ,
+	  "data" : "(  -117.623198,     23.208206,    -82.322650,46.182910          )"
+	}
+]
+
+},{}],6:[function(require,module,exports){
 var mgrs = require('./mgrs');
 
 function Point(x, y, z) {
@@ -62,7 +1046,7 @@ Point.prototype.toMGRS = function(accuracy) {
   }, accuracy);
 };
 module.exports = Point;
-},{"./mgrs":17}],2:[function(require,module,exports){
+},{"./mgrs":22}],7:[function(require,module,exports){
 var extend = require('./extend');
 var common = require('./common');
 var defs = require('./defs');
@@ -197,7 +1181,7 @@ Projection.prototype = {
 };
 module.exports = Projection;
 
-},{"./common":4,"./constants/index":9,"./datum":11,"./defs":13,"./extend":14,"./projString":18,"./projections/index":27,"./wkt":47}],3:[function(require,module,exports){
+},{"./common":9,"./constants/index":14,"./datum":16,"./defs":18,"./extend":19,"./projString":23,"./projections/index":32,"./wkt":52}],8:[function(require,module,exports){
 module.exports = function(crs, denorm, point) {
   var xin = point.x,
     yin = point.y,
@@ -250,7 +1234,7 @@ module.exports = function(crs, denorm, point) {
   return point;
 };
 
-},{}],4:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 exports.PI = 3.141592653589793238; //Math.PI;
 exports.HALF_PI = 1.570796326794896619; //Math.PI*0.5;
 exports.TWO_PI = 6.283185307179586477; //Math.PI*2;
@@ -729,7 +1713,7 @@ exports.C66 = 0.36458333333333333333;
 exports.C68 = 0.00569661458333333333;
 exports.C88 = 0.3076171875;
 
-},{}],5:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 exports.wgs84 = {
   towgs84: "0,0,0",
   ellipse: "WGS84",
@@ -805,7 +1789,7 @@ exports.gunung_segara = {
   ellipse: 'bessel',
   datumName: 'Gunung Segara Jakarta'
 };
-},{}],6:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 exports.MERIT = {
   a: 6378137.0,
   rf: 298.257,
@@ -1021,7 +2005,7 @@ exports.sphere = {
   b: 6370997.0,
   ellipseName: "Normal Sphere (r=6370997)"
 };
-},{}],7:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 exports.greenwich = 0.0; //"0dE",
 exports.lisbon = -9.131906111111; //"9d07'54.862\"W",
 exports.paris = 2.337229166667; //"2d20'14.025\"E",
@@ -1035,7 +2019,7 @@ exports.brussels = 4.367975; //"4d22'4.71\"E",
 exports.stockholm = 18.058277777778; //"18d3'29.8\"E",
 exports.athens = 23.7163375; //"23d42'58.815\"E",
 exports.oslo = 10.722916666667; //"10d43'22.5\"E"
-},{}],8:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 // Based on . CTABLE  structure :
   // FIXME: better to have array instead of object holding longitudes, latitudes members
   //        In the former case, one has to document index 0 is longitude and
@@ -1059,7 +2043,7 @@ exports.null = { // name of grid's file
     [0.0, 0.0] // }
   ]
 };
-},{}],9:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 exports.PrimeMeridian = require('./PrimeMeridian');
 
 exports.Ellipsoid = require('./Ellipsoid');
@@ -1071,7 +2055,7 @@ exports.Datum.OSB36 = exports.Datum.OSGB36; //as returned from spatialreference.
 
 exports.grids = require('./grids');
 
-},{"./Datum":5,"./Ellipsoid":6,"./PrimeMeridian":7,"./grids":8}],10:[function(require,module,exports){
+},{"./Datum":10,"./Ellipsoid":11,"./PrimeMeridian":12,"./grids":13}],15:[function(require,module,exports){
 var point = require('./Point');
 var proj = require('./Proj');
 var transform = require('./transform');
@@ -1137,7 +2121,7 @@ function proj4(fromProj, toProj, coord) {
   }
 }
 module.exports = proj4;
-},{"./Point":1,"./Proj":2,"./transform":45}],11:[function(require,module,exports){
+},{"./Point":6,"./Proj":7,"./transform":50}],16:[function(require,module,exports){
 var common = require('./common');
 var datum = function(proj) {
   if (!(this instanceof datum)) {
@@ -1535,7 +2519,7 @@ datum.prototype = {
 */
 module.exports = datum;
 
-},{"./common":4}],12:[function(require,module,exports){
+},{"./common":9}],17:[function(require,module,exports){
 var common = require('./common');
 module.exports = function(source, dest, point) {
   var wp, i, l;
@@ -1631,7 +2615,7 @@ module.exports = function(source, dest, point) {
 };
 
 
-},{"./common":4}],13:[function(require,module,exports){
+},{"./common":9}],18:[function(require,module,exports){
 var globals = require('./global');
 var parseProj = require('./projString');
 var wkt = require('./wkt');
@@ -1681,7 +2665,7 @@ function defs(name) {
 globals(defs);
 module.exports = defs;
 
-},{"./global":15,"./projString":18,"./wkt":47}],14:[function(require,module,exports){
+},{"./global":20,"./projString":23,"./wkt":52}],19:[function(require,module,exports){
 module.exports = function(destination, source) {
   destination = destination || {};
   var value, property;
@@ -1697,7 +2681,7 @@ module.exports = function(destination, source) {
   return destination;
 };
 
-},{}],15:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = function(defs) {
   defs('WGS84', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
   defs('EPSG:4326', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
@@ -1710,7 +2694,7 @@ module.exports = function(defs) {
   defs['EPSG:102113'] = defs['EPSG:3857'];
 };
 
-},{}],16:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var proj4 = require('./core');
 proj4.defaultDatum = 'WGS84'; //default datum
 proj4.Proj = require('./Proj');
@@ -1721,7 +2705,7 @@ proj4.transform = require('./transform');
 proj4.mgrs = require('./mgrs');
 proj4.version = require('./version');
 module.exports = proj4;
-},{"./Point":1,"./Proj":2,"./core":10,"./defs":13,"./mgrs":17,"./transform":45,"./version":46}],17:[function(require,module,exports){
+},{"./Point":6,"./Proj":7,"./core":15,"./defs":18,"./mgrs":22,"./transform":50,"./version":51}],22:[function(require,module,exports){
 /*
 Portions of this software are based on a port of components from the OpenMap
 com.bbn.openmap.proj.coords Java package. An initial port was initially created
@@ -2611,7 +3595,7 @@ function getMinNorthing(zoneLetter) {
 
 }
 
-},{}],18:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var common = require('./common');
 var constants = require('./constants/index');
 module.exports = function(defData) {
@@ -2729,7 +3713,7 @@ module.exports = function(defData) {
   return self;
 };
 
-},{"./common":4,"./constants/index":9}],19:[function(require,module,exports){
+},{"./common":9,"./constants/index":14}],24:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
 
@@ -2848,7 +3832,7 @@ exports.phi1z = function(eccent, qs) {
 };
 exports.names = ["Albers_Conic_Equal_Area", "Albers", "aea"];
 
-},{"../common":4}],20:[function(require,module,exports){
+},{"../common":9}],25:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
   this.sin_p12 = Math.sin(this.lat0);
@@ -3037,7 +4021,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["Azimuthal_Equidistant", "aeqd"];
 
-},{"../common":4}],21:[function(require,module,exports){
+},{"../common":9}],26:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
   if (!this.sphere) {
@@ -3131,7 +4115,7 @@ exports.inverse = function(p) {
 
 };
 exports.names = ["Cassini", "Cassini_Soldner", "cass"];
-},{"../common":4}],22:[function(require,module,exports){
+},{"../common":9}],27:[function(require,module,exports){
 var common = require('../common');
 /*
   reference:  
@@ -3193,7 +4177,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["cea"];
 
-},{"../common":4}],23:[function(require,module,exports){
+},{"../common":9}],28:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
 
@@ -3235,7 +4219,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["Equirectangular", "Equidistant_Cylindrical", "eqc"];
 
-},{"../common":4}],24:[function(require,module,exports){
+},{"../common":9}],29:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
 
@@ -3339,7 +4323,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["Equidistant_Conic", "eqdc"];
 
-},{"../common":4}],25:[function(require,module,exports){
+},{"../common":9}],30:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
   var sphi = Math.sin(this.lat0);
@@ -3383,7 +4367,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["gauss"];
 
-},{"../common":4}],26:[function(require,module,exports){
+},{"../common":9}],31:[function(require,module,exports){
 var common = require('../common');
 /*
   reference:
@@ -3481,7 +4465,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["gnom"];
 
-},{"../common":4}],27:[function(require,module,exports){
+},{"../common":9}],32:[function(require,module,exports){
 var projs = [
   require('./tmerc'),
   require('./utm'),
@@ -3539,7 +4523,7 @@ exports.start = function() {
   projs.forEach(add);
 };
 
-},{"./aea":19,"./aeqd":20,"./cass":21,"./cea":22,"./eqc":23,"./eqdc":24,"./gnom":26,"./krovak":28,"./laea":29,"./lcc":30,"./longlat":31,"./merc":32,"./mill":33,"./moll":34,"./nzmg":35,"./omerc":36,"./poly":37,"./sinu":38,"./somerc":39,"./stere":40,"./sterea":41,"./tmerc":42,"./utm":43,"./vandg":44}],28:[function(require,module,exports){
+},{"./aea":24,"./aeqd":25,"./cass":26,"./cea":27,"./eqc":28,"./eqdc":29,"./gnom":31,"./krovak":33,"./laea":34,"./lcc":35,"./longlat":36,"./merc":37,"./mill":38,"./moll":39,"./nzmg":40,"./omerc":41,"./poly":42,"./sinu":43,"./somerc":44,"./stere":45,"./sterea":46,"./tmerc":47,"./utm":48,"./vandg":49}],33:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
   this.a = 6377397.155;
@@ -3639,7 +4623,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["Krovak", "krovak"];
 
-},{"../common":4}],29:[function(require,module,exports){
+},{"../common":9}],34:[function(require,module,exports){
 var common = require('../common');
 /*
   reference
@@ -3925,7 +4909,7 @@ exports.authlat = function(beta, APA) {
 };
 exports.names = ["Lambert Azimuthal Equal Area", "Lambert_Azimuthal_Equal_Area", "laea"];
 
-},{"../common":4}],30:[function(require,module,exports){
+},{"../common":9}],35:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
 
@@ -4055,7 +5039,7 @@ exports.inverse = function(p) {
 
 exports.names = ["Lambert Tangential Conformal Conic Projection", "Lambert_Conformal_Conic", "Lambert_Conformal_Conic_2SP", "lcc"];
 
-},{"../common":4}],31:[function(require,module,exports){
+},{"../common":9}],36:[function(require,module,exports){
 exports.init = function() {
   //no-op for longlat
 };
@@ -4067,7 +5051,7 @@ exports.forward = identity;
 exports.inverse = identity;
 exports.names = ["longlat", "identity"];
 
-},{}],32:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
   var con = this.b / this.a;
@@ -4153,7 +5137,7 @@ exports.inverse = function(p) {
 
 exports.names = ["Mercator", "Popular Visualisation Pseudo Mercator", "Mercator_1SP", "Mercator_Auxiliary_Sphere", "merc"];
 
-},{"../common":4}],33:[function(require,module,exports){
+},{"../common":9}],38:[function(require,module,exports){
 var common = require('../common');
 /*
   reference
@@ -4200,7 +5184,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["Miller_Cylindrical", "mill"];
 
-},{"../common":4}],34:[function(require,module,exports){
+},{"../common":9}],39:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {};
 
@@ -4278,7 +5262,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["Mollweide", "moll"];
 
-},{"../common":4}],35:[function(require,module,exports){
+},{"../common":9}],40:[function(require,module,exports){
 var common = require('../common');
 /*
   reference
@@ -4498,7 +5482,7 @@ exports.inverse = function(p) {
   return p;
 };
 exports.names = ["New_Zealand_Map_Grid", "nzmg"];
-},{"../common":4}],36:[function(require,module,exports){
+},{"../common":9}],41:[function(require,module,exports){
 var common = require('../common');
 
 
@@ -4663,7 +5647,7 @@ exports.inverse = function(p) {
 };
 
 exports.names = ["Hotine_Oblique_Mercator", "Hotine Oblique Mercator", "Hotine_Oblique_Mercator_Azimuth_Natural_Origin", "Hotine_Oblique_Mercator_Azimuth_Center", "omerc"];
-},{"../common":4}],37:[function(require,module,exports){
+},{"../common":9}],42:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
   /* Place parameters in static storage for common use
@@ -4783,7 +5767,7 @@ exports.inverse = function(p) {
   return p;
 };
 exports.names = ["Polyconic", "poly"];
-},{"../common":4}],38:[function(require,module,exports){
+},{"../common":9}],43:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
   /* Place parameters in static storage for common use
@@ -4882,7 +5866,7 @@ exports.inverse = function(p) {
   return p;
 };
 exports.names = ["Sinusoidal", "sinu"];
-},{"../common":4}],39:[function(require,module,exports){
+},{"../common":9}],44:[function(require,module,exports){
 /*
   references:
     Formules et constantes pour le Calcul pour la
@@ -4964,7 +5948,7 @@ exports.inverse = function(p) {
 
 exports.names = ["somerc"];
 
-},{}],40:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var common = require('../common');
 exports.ssfn_ = function(phit, sinphi, eccen) {
   sinphi *= eccen;
@@ -5125,7 +6109,7 @@ exports.inverse = function(p) {
 
 };
 exports.names = ["stere"];
-},{"../common":4}],41:[function(require,module,exports){
+},{"../common":9}],46:[function(require,module,exports){
 var common = require('../common');
 var gauss = require('./gauss');
 exports.init = function() {
@@ -5184,7 +6168,7 @@ exports.inverse = function(p) {
 
 exports.names = ["Stereographic_North_Pole", "Oblique_Stereographic", "Polar_Stereographic", "sterea","Oblique Stereographic Alternative"];
 
-},{"../common":4,"./gauss":25}],42:[function(require,module,exports){
+},{"../common":9,"./gauss":30}],47:[function(require,module,exports){
 var common = require('../common');
 exports.init = function() {
   this.e0 = common.e0fn(this.es);
@@ -5311,7 +6295,7 @@ exports.inverse = function(p) {
 };
 exports.names = ["Transverse_Mercator", "Transverse Mercator", "tmerc"];
 
-},{"../common":4}],43:[function(require,module,exports){
+},{"../common":9}],48:[function(require,module,exports){
 var common = require('../common');
 var tmerc = require('./tmerc');
 exports.dependsOn = 'tmerc';
@@ -5331,7 +6315,7 @@ exports.init = function() {
 };
 exports.names = ["Universal Transverse Mercator System", "utm"];
 
-},{"../common":4,"./tmerc":42}],44:[function(require,module,exports){
+},{"../common":9,"./tmerc":47}],49:[function(require,module,exports){
 var common = require('../common');
 
 /* Initialize the Van Der Grinten projection
@@ -5450,7 +6434,7 @@ exports.inverse = function(p) {
   return p;
 };
 exports.names = ["Van_der_Grinten_I", "VanDerGrinten", "vandg"];
-},{"../common":4}],45:[function(require,module,exports){
+},{"../common":9}],50:[function(require,module,exports){
 var common = require('./common');
 var datum_transform = require('./datum_transform');
 var adjust_axis = require('./adjust_axis');
@@ -5517,9 +6501,9 @@ module.exports = function transform(source, dest, point) {
 
   return point;
 };
-},{"./Proj":2,"./adjust_axis":3,"./common":4,"./datum_transform":12}],46:[function(require,module,exports){
+},{"./Proj":7,"./adjust_axis":8,"./common":9,"./datum_transform":17}],51:[function(require,module,exports){
 module.exports = '2.0.0';
-},{}],47:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 var common = require('./common');
 var extend = require('./extend');
 
@@ -5727,7 +6711,480 @@ module.exports = function(wkt, self) {
   return extend(self, obj.output);
 };
 
-},{"./common":4,"./extend":14}]},{},[16])
-(16)
-});
+},{"./common":9,"./extend":19}],53:[function(require,module,exports){
+/*!
+* ZeroClipboard
+* The ZeroClipboard library provides an easy way to copy text to the clipboard using an invisible Adobe Flash movie and a JavaScript interface.
+* Copyright (c) 2013 Jon Rohan, James M. Greene
+* Licensed MIT
+* http://zeroclipboard.org/
+* v1.2.3
+*/
+(function() {
+  "use strict";
+  var _camelizeCssPropName = function() {
+    var matcherRegex = /\-([a-z])/g, replacerFn = function(match, group) {
+      return group.toUpperCase();
+    };
+    return function(prop) {
+      return prop.replace(matcherRegex, replacerFn);
+    };
+  }();
+  var _getStyle = function(el, prop) {
+    var value, camelProp, tagName, possiblePointers, i, len;
+    if (window.getComputedStyle) {
+      value = window.getComputedStyle(el, null).getPropertyValue(prop);
+    } else {
+      camelProp = _camelizeCssPropName(prop);
+      if (el.currentStyle) {
+        value = el.currentStyle[camelProp];
+      } else {
+        value = el.style[camelProp];
+      }
+    }
+    if (prop === "cursor") {
+      if (!value || value === "auto") {
+        tagName = el.tagName.toLowerCase();
+        possiblePointers = [ "a" ];
+        for (i = 0, len = possiblePointers.length; i < len; i++) {
+          if (tagName === possiblePointers[i]) {
+            return "pointer";
+          }
+        }
+      }
+    }
+    return value;
+  };
+  var _elementMouseOver = function(event) {
+    if (!ZeroClipboard.prototype._singleton) return;
+    if (!event) {
+      event = window.event;
+    }
+    var target;
+    if (this !== window) {
+      target = this;
+    } else if (event.target) {
+      target = event.target;
+    } else if (event.srcElement) {
+      target = event.srcElement;
+    }
+    ZeroClipboard.prototype._singleton.setCurrent(target);
+  };
+  var _addEventHandler = function(element, method, func) {
+    if (element.addEventListener) {
+      element.addEventListener(method, func, false);
+    } else if (element.attachEvent) {
+      element.attachEvent("on" + method, func);
+    }
+  };
+  var _removeEventHandler = function(element, method, func) {
+    if (element.removeEventListener) {
+      element.removeEventListener(method, func, false);
+    } else if (element.detachEvent) {
+      element.detachEvent("on" + method, func);
+    }
+  };
+  var _addClass = function(element, value) {
+    if (element.addClass) {
+      element.addClass(value);
+      return element;
+    }
+    if (value && typeof value === "string") {
+      var classNames = (value || "").split(/\s+/);
+      if (element.nodeType === 1) {
+        if (!element.className) {
+          element.className = value;
+        } else {
+          var className = " " + element.className + " ", setClass = element.className;
+          for (var c = 0, cl = classNames.length; c < cl; c++) {
+            if (className.indexOf(" " + classNames[c] + " ") < 0) {
+              setClass += " " + classNames[c];
+            }
+          }
+          element.className = setClass.replace(/^\s+|\s+$/g, "");
+        }
+      }
+    }
+    return element;
+  };
+  var _removeClass = function(element, value) {
+    if (element.removeClass) {
+      element.removeClass(value);
+      return element;
+    }
+    if (value && typeof value === "string" || value === undefined) {
+      var classNames = (value || "").split(/\s+/);
+      if (element.nodeType === 1 && element.className) {
+        if (value) {
+          var className = (" " + element.className + " ").replace(/[\n\t]/g, " ");
+          for (var c = 0, cl = classNames.length; c < cl; c++) {
+            className = className.replace(" " + classNames[c] + " ", " ");
+          }
+          element.className = className.replace(/^\s+|\s+$/g, "");
+        } else {
+          element.className = "";
+        }
+      }
+    }
+    return element;
+  };
+  var _getZoomFactor = function() {
+    var rect, physicalWidth, logicalWidth, zoomFactor = 1;
+    if (typeof document.body.getBoundingClientRect === "function") {
+      rect = document.body.getBoundingClientRect();
+      physicalWidth = rect.right - rect.left;
+      logicalWidth = document.body.offsetWidth;
+      zoomFactor = Math.round(physicalWidth / logicalWidth * 100) / 100;
+    }
+    return zoomFactor;
+  };
+  var _getDOMObjectPosition = function(obj) {
+    var info = {
+      left: 0,
+      top: 0,
+      width: 0,
+      height: 0,
+      zIndex: 999999999
+    };
+    var zi = _getStyle(obj, "z-index");
+    if (zi && zi !== "auto") {
+      info.zIndex = parseInt(zi, 10);
+    }
+    if (obj.getBoundingClientRect) {
+      var rect = obj.getBoundingClientRect();
+      var pageXOffset, pageYOffset, zoomFactor;
+      if ("pageXOffset" in window && "pageYOffset" in window) {
+        pageXOffset = window.pageXOffset;
+        pageYOffset = window.pageYOffset;
+      } else {
+        zoomFactor = _getZoomFactor();
+        pageXOffset = Math.round(document.documentElement.scrollLeft / zoomFactor);
+        pageYOffset = Math.round(document.documentElement.scrollTop / zoomFactor);
+      }
+      var leftBorderWidth = document.documentElement.clientLeft || 0;
+      var topBorderWidth = document.documentElement.clientTop || 0;
+      info.left = rect.left + pageXOffset - leftBorderWidth;
+      info.top = rect.top + pageYOffset - topBorderWidth;
+      info.width = "width" in rect ? rect.width : rect.right - rect.left;
+      info.height = "height" in rect ? rect.height : rect.bottom - rect.top;
+    }
+    return info;
+  };
+  var _noCache = function(path, options) {
+    var useNoCache = !(options && options.useNoCache === false);
+    if (useNoCache) {
+      return (path.indexOf("?") === -1 ? "?" : "&") + "nocache=" + new Date().getTime();
+    } else {
+      return "";
+    }
+  };
+  var _vars = function(options) {
+    var str = [];
+    var origins = [];
+    if (options.trustedOrigins) {
+      if (typeof options.trustedOrigins === "string") {
+        origins.push(options.trustedOrigins);
+      } else if (typeof options.trustedOrigins === "object" && "length" in options.trustedOrigins) {
+        origins = origins.concat(options.trustedOrigins);
+      }
+    }
+    if (options.trustedDomains) {
+      if (typeof options.trustedDomains === "string") {
+        origins.push(options.trustedDomains);
+      } else if (typeof options.trustedDomains === "object" && "length" in options.trustedDomains) {
+        origins = origins.concat(options.trustedDomains);
+      }
+    }
+    if (origins.length) {
+      str.push("trustedOrigins=" + encodeURIComponent(origins.join(",")));
+    }
+    if (typeof options.amdModuleId === "string" && options.amdModuleId) {
+      str.push("amdModuleId=" + encodeURIComponent(options.amdModuleId));
+    }
+    if (typeof options.cjsModuleId === "string" && options.cjsModuleId) {
+      str.push("cjsModuleId=" + encodeURIComponent(options.cjsModuleId));
+    }
+    return str.join("&");
+  };
+  var _inArray = function(elem, array) {
+    if (array.indexOf) {
+      return array.indexOf(elem);
+    }
+    for (var i = 0, length = array.length; i < length; i++) {
+      if (array[i] === elem) {
+        return i;
+      }
+    }
+    return -1;
+  };
+  var _prepGlue = function(elements) {
+    if (typeof elements === "string") throw new TypeError("ZeroClipboard doesn't accept query strings.");
+    if (!elements.length) return [ elements ];
+    return elements;
+  };
+  var _dispatchCallback = function(func, element, instance, args, async) {
+    if (async) {
+      window.setTimeout(function() {
+        func.call(element, instance, args);
+      }, 0);
+    } else {
+      func.call(element, instance, args);
+    }
+  };
+  var ZeroClipboard = function(elements, options) {
+    if (elements) (ZeroClipboard.prototype._singleton || this).glue(elements);
+    if (ZeroClipboard.prototype._singleton) return ZeroClipboard.prototype._singleton;
+    ZeroClipboard.prototype._singleton = this;
+    this.options = {};
+    for (var kd in _defaults) this.options[kd] = _defaults[kd];
+    for (var ko in options) this.options[ko] = options[ko];
+    this.handlers = {};
+    if (ZeroClipboard.detectFlashSupport()) _bridge();
+  };
+  var currentElement, gluedElements = [];
+  ZeroClipboard.prototype.setCurrent = function(element) {
+    currentElement = element;
+    this.reposition();
+    var titleAttr = element.getAttribute("title");
+    if (titleAttr) {
+      this.setTitle(titleAttr);
+    }
+    var useHandCursor = this.options.forceHandCursor === true || _getStyle(element, "cursor") === "pointer";
+    _setHandCursor.call(this, useHandCursor);
+    return this;
+  };
+  ZeroClipboard.prototype.setText = function(newText) {
+    if (newText && newText !== "") {
+      this.options.text = newText;
+      if (this.ready()) this.flashBridge.setText(newText);
+    }
+    return this;
+  };
+  ZeroClipboard.prototype.setTitle = function(newTitle) {
+    if (newTitle && newTitle !== "") this.htmlBridge.setAttribute("title", newTitle);
+    return this;
+  };
+  ZeroClipboard.prototype.setSize = function(width, height) {
+    if (this.ready()) this.flashBridge.setSize(width, height);
+    return this;
+  };
+  ZeroClipboard.prototype.setHandCursor = function(enabled) {
+    enabled = typeof enabled === "boolean" ? enabled : !!enabled;
+    _setHandCursor.call(this, enabled);
+    this.options.forceHandCursor = enabled;
+    return this;
+  };
+  var _setHandCursor = function(enabled) {
+    if (this.ready()) this.flashBridge.setHandCursor(enabled);
+  };
+  ZeroClipboard.version = "1.2.3";
+  var _defaults = {
+    moviePath: "ZeroClipboard.swf",
+    trustedOrigins: null,
+    text: null,
+    hoverClass: "zeroclipboard-is-hover",
+    activeClass: "zeroclipboard-is-active",
+    allowScriptAccess: "sameDomain",
+    useNoCache: true,
+    forceHandCursor: false
+  };
+  ZeroClipboard.setDefaults = function(options) {
+    for (var ko in options) _defaults[ko] = options[ko];
+  };
+  ZeroClipboard.destroy = function() {
+    ZeroClipboard.prototype._singleton.unglue(gluedElements);
+    var bridge = ZeroClipboard.prototype._singleton.htmlBridge;
+    bridge.parentNode.removeChild(bridge);
+    delete ZeroClipboard.prototype._singleton;
+  };
+  ZeroClipboard.detectFlashSupport = function() {
+    var hasFlash = false;
+    if (typeof ActiveXObject === "function") {
+      try {
+        if (new ActiveXObject("ShockwaveFlash.ShockwaveFlash")) {
+          hasFlash = true;
+        }
+      } catch (error) {}
+    }
+    if (!hasFlash && navigator.mimeTypes["application/x-shockwave-flash"]) {
+      hasFlash = true;
+    }
+    return hasFlash;
+  };
+  var _amdModuleId = null;
+  var _cjsModuleId = null;
+  var _bridge = function() {
+    var flashBridge, len;
+    var client = ZeroClipboard.prototype._singleton;
+    var container = document.getElementById("global-zeroclipboard-html-bridge");
+    if (!container) {
+      var opts = {};
+      for (var ko in client.options) opts[ko] = client.options[ko];
+      opts.amdModuleId = _amdModuleId;
+      opts.cjsModuleId = _cjsModuleId;
+      var flashvars = _vars(opts);
+      var html = '      <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="global-zeroclipboard-flash-bridge" width="100%" height="100%">         <param name="movie" value="' + client.options.moviePath + _noCache(client.options.moviePath, client.options) + '"/>         <param name="allowScriptAccess" value="' + client.options.allowScriptAccess + '"/>         <param name="scale" value="exactfit"/>         <param name="loop" value="false"/>         <param name="menu" value="false"/>         <param name="quality" value="best" />         <param name="bgcolor" value="#ffffff"/>         <param name="wmode" value="transparent"/>         <param name="flashvars" value="' + flashvars + '"/>         <embed src="' + client.options.moviePath + _noCache(client.options.moviePath, client.options) + '"           loop="false" menu="false"           quality="best" bgcolor="#ffffff"           width="100%" height="100%"           name="global-zeroclipboard-flash-bridge"           allowScriptAccess="always"           allowFullScreen="false"           type="application/x-shockwave-flash"           wmode="transparent"           pluginspage="http://www.macromedia.com/go/getflashplayer"           flashvars="' + flashvars + '"           scale="exactfit">         </embed>       </object>';
+      container = document.createElement("div");
+      container.id = "global-zeroclipboard-html-bridge";
+      container.setAttribute("class", "global-zeroclipboard-container");
+      container.setAttribute("data-clipboard-ready", false);
+      container.style.position = "absolute";
+      container.style.left = "-9999px";
+      container.style.top = "-9999px";
+      container.style.width = "15px";
+      container.style.height = "15px";
+      container.style.zIndex = "9999";
+      container.innerHTML = html;
+      document.body.appendChild(container);
+    }
+    client.htmlBridge = container;
+    flashBridge = document["global-zeroclipboard-flash-bridge"];
+    if (flashBridge && (len = flashBridge.length)) {
+      flashBridge = flashBridge[len - 1];
+    }
+    client.flashBridge = flashBridge || container.children[0].lastElementChild;
+  };
+  ZeroClipboard.prototype.resetBridge = function() {
+    this.htmlBridge.style.left = "-9999px";
+    this.htmlBridge.style.top = "-9999px";
+    this.htmlBridge.removeAttribute("title");
+    this.htmlBridge.removeAttribute("data-clipboard-text");
+    _removeClass(currentElement, this.options.activeClass);
+    currentElement = null;
+    this.options.text = null;
+    return this;
+  };
+  ZeroClipboard.prototype.ready = function() {
+    var ready = this.htmlBridge.getAttribute("data-clipboard-ready");
+    return ready === "true" || ready === true;
+  };
+  ZeroClipboard.prototype.reposition = function() {
+    if (!currentElement) return false;
+    var pos = _getDOMObjectPosition(currentElement);
+    this.htmlBridge.style.top = pos.top + "px";
+    this.htmlBridge.style.left = pos.left + "px";
+    this.htmlBridge.style.width = pos.width + "px";
+    this.htmlBridge.style.height = pos.height + "px";
+    this.htmlBridge.style.zIndex = pos.zIndex + 1;
+    this.setSize(pos.width, pos.height);
+    return this;
+  };
+  ZeroClipboard.dispatch = function(eventName, args) {
+    ZeroClipboard.prototype._singleton.receiveEvent(eventName, args);
+  };
+  ZeroClipboard.prototype.on = function(eventName, func) {
+    var events = eventName.toString().split(/\s/g);
+    for (var i = 0; i < events.length; i++) {
+      eventName = events[i].toLowerCase().replace(/^on/, "");
+      if (!this.handlers[eventName]) this.handlers[eventName] = func;
+    }
+    if (this.handlers.noflash && !ZeroClipboard.detectFlashSupport()) {
+      this.receiveEvent("onNoFlash", null);
+    }
+    return this;
+  };
+  ZeroClipboard.prototype.addEventListener = ZeroClipboard.prototype.on;
+  ZeroClipboard.prototype.off = function(eventName, func) {
+    var events = eventName.toString().split(/\s/g);
+    for (var i = 0; i < events.length; i++) {
+      eventName = events[i].toLowerCase().replace(/^on/, "");
+      for (var event in this.handlers) {
+        if (event === eventName && this.handlers[event] === func) {
+          delete this.handlers[event];
+        }
+      }
+    }
+    return this;
+  };
+  ZeroClipboard.prototype.removeEventListener = ZeroClipboard.prototype.off;
+  ZeroClipboard.prototype.receiveEvent = function(eventName, args) {
+    eventName = eventName.toString().toLowerCase().replace(/^on/, "");
+    var element = currentElement;
+    var performCallbackAsync = true;
+    switch (eventName) {
+     case "load":
+      if (args && parseFloat(args.flashVersion.replace(",", ".").replace(/[^0-9\.]/gi, "")) < 10) {
+        this.receiveEvent("onWrongFlash", {
+          flashVersion: args.flashVersion
+        });
+        return;
+      }
+      this.htmlBridge.setAttribute("data-clipboard-ready", true);
+      break;
+
+     case "mouseover":
+      _addClass(element, this.options.hoverClass);
+      break;
+
+     case "mouseout":
+      _removeClass(element, this.options.hoverClass);
+      this.resetBridge();
+      break;
+
+     case "mousedown":
+      _addClass(element, this.options.activeClass);
+      break;
+
+     case "mouseup":
+      _removeClass(element, this.options.activeClass);
+      break;
+
+     case "datarequested":
+      var targetId = element.getAttribute("data-clipboard-target"), targetEl = !targetId ? null : document.getElementById(targetId);
+      if (targetEl) {
+        var textContent = targetEl.value || targetEl.textContent || targetEl.innerText;
+        if (textContent) this.setText(textContent);
+      } else {
+        var defaultText = element.getAttribute("data-clipboard-text");
+        if (defaultText) this.setText(defaultText);
+      }
+      performCallbackAsync = false;
+      break;
+
+     case "complete":
+      this.options.text = null;
+      break;
+    }
+    if (this.handlers[eventName]) {
+      var func = this.handlers[eventName];
+      if (typeof func === "string" && typeof window[func] === "function") {
+        func = window[func];
+      }
+      if (typeof func === "function") {
+        _dispatchCallback(func, element, this, args, performCallbackAsync);
+      }
+    }
+  };
+  ZeroClipboard.prototype.glue = function(elements) {
+    elements = _prepGlue(elements);
+    for (var i = 0; i < elements.length; i++) {
+      if (_inArray(elements[i], gluedElements) == -1) {
+        gluedElements.push(elements[i]);
+        _addEventHandler(elements[i], "mouseover", _elementMouseOver);
+      }
+    }
+    return this;
+  };
+  ZeroClipboard.prototype.unglue = function(elements) {
+    elements = _prepGlue(elements);
+    for (var i = 0; i < elements.length; i++) {
+      _removeEventHandler(elements[i], "mouseover", _elementMouseOver);
+      var arrayIndex = _inArray(elements[i], gluedElements);
+      if (arrayIndex != -1) gluedElements.splice(arrayIndex, 1);
+    }
+    return this;
+  };
+  if (typeof define === "function" && define.amd) {
+    define([ "require", "exports", "module" ], function(require, exports, module) {
+      _amdModuleId = module && module.id || null;
+      return ZeroClipboard;
+    });
+  } else if (typeof module === "object" && module && typeof module.exports === "object" && module.exports) {
+    _cjsModuleId = module.id || null;
+    module.exports = ZeroClipboard;
+  } else {
+    window.ZeroClipboard = ZeroClipboard;
+  }
+})();
+},{}]},{},[3])
 ;

@@ -1,14 +1,24 @@
+var TEST_DATA = require("./testdata.json");
+var Bbox = require("../bbox");
+// global dependency $.jQuery
+// global dependecy Leaflet
+
 (function( definition ) { // execute immeidately
+	
+    /*
+    **
+    **  // TEST_DATA is held as attr ref
+    **  example run syntax fromm console --> BBOX_T().run_this_mother(); // that's it
+    **
+    */
 
 	if ( typeof module !== 'undefined' &&
 	     typeof module.exports !== 'undefined' ) {
 		module.exports = definition();
 	}
 	else if ( typeof window === "object" ) {
-		// example run syntax: BBOX_T( { 'url' : '/js/maps/testdata.js' } );
 		window.BBOX_T = definition();
 	}
-
 
 })( function() {
 	'use strict';
@@ -27,7 +37,9 @@
 
 		this.test_url = options.url || "";
 
-		this.global_setup(); // execute immediately
+        this.test_data = TEST_DATA;
+
+		//this.global_setup(); // execute immediately
 	};
 
 	/*
@@ -36,9 +48,11 @@
 	**
 	*/
 	TestRunner.prototype.global_setup = function() {
-		
-		var self = this; // hold ref to instance
 
+	    this.run_this_mother( this.test_data );
+
+        /*
+		var self = this; // hold ref to instance
 		$.ajax({
 			'url' :  this.test_url ,
 			'dataType' : 'json'
@@ -49,6 +63,7 @@
 		.fail( function( error ) {
 			console.log( "The test data didn't load: ", error );
 		});
+        */
 
 	};
 	
@@ -88,8 +103,8 @@
 	TestRunner.prototype.test_deletable = function(identifier){ // TODO: this needs work
 		var toolbar = null;
 		// get the right toolbar, depending on attributes
-		for( var key in drawControl._toolbars ){
-			var tbar = drawControl._toolbars[key];
+		for( var key in Bbox.drawControl._toolbars ){
+			var tbar = Bbox.drawControl._toolbars[key];
 			if ( !(tbar instanceof L.EditToolbar ) ){ 
 				continue;	
 			}
@@ -101,7 +116,7 @@
 	    	this._draw_delete_handler = map.on('draw:deleted', function (e) {
 			try {
 				e.layers.eachLayer(function (l) {
-				    drawnItems.removeLayer(l);
+				    Bbox.drawnItems.removeLayer(l);
 				});
 				console.warn( "[ PASSED ]: test_deletable" );
 			}

@@ -545,5 +545,3 @@ L.Util.extend(Wkt.Wkt.prototype, {
         return L.latLng(lat, lng, true);
     }
 });
-
-
