@@ -26,6 +26,10 @@ Helper page for finding bbox values from a map to help with interaction with too
 
 3. We have dependencies that can be installed with npm AND they can be imported ( required ) in nodejs framework
 
+    + mapbox.js
+    + leaflet
+    + proj4
+    + proj4leaflet
     + zeroclipboard
 
 4. Non-require libraries such as:
