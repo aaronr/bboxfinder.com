@@ -116,3 +116,5 @@ L.Control.Sidebar = L.Control.extend({
 L.control.sidebar = function (placeholder, options) {
     return new L.Control.Sidebar(placeholder, options);
 };
+
+module.exports = L.control.sidebar;

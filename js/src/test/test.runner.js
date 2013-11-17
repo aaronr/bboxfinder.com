@@ -1,14 +1,12 @@
 var TEST_DATA = require("./testdata.json");
 var Bbox = require("../bbox");
-// global dependency $.jQuery
-// global dependecy Leaflet
 
 (function( definition ) { // execute immeidately
 	
     /*
     **
     **  // TEST_DATA is held as attr ref
-    **  example run syntax fromm console --> BBOX_T().run_this_mother(); // that's it
+    **  example run syntax fromm console --> BBOX_T().setup(); // that's it
     **
     */
 
@@ -39,7 +37,6 @@ var Bbox = require("../bbox");
 
         this.test_data = TEST_DATA;
 
-		//this.global_setup(); // execute immediately
 	};
 
 	/*
@@ -47,23 +44,9 @@ var Bbox = require("../bbox");
 	**  functions
 	**
 	*/
-	TestRunner.prototype.global_setup = function() {
+	TestRunner.prototype.setup = function() {
 
 	    this.run_this_mother( this.test_data );
-
-        /*
-		var self = this; // hold ref to instance
-		$.ajax({
-			'url' :  this.test_url ,
-			'dataType' : 'json'
-		})
-		.done( function( json_data ) {
-			self.run_this_mother.call( self, json_data );
-		})
-		.fail( function( error ) {
-			console.log( "The test data didn't load: ", error );
-		});
-        */
 
 	};
 	

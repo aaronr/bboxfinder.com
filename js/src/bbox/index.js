@@ -1,6 +1,5 @@
-var ZeroClipboard = require('zeroclipboard');
-var proj4 = require('proj4');
-var FormatSniffer = require('../format_sniffer/sniffer.js');
+window.ZeroClipboard = require('zeroclipboard');
+window.FormatSniffer = require('../format_sniffer/sniffer.js');
 
 (function( def ) { // execute immediately
 
@@ -209,8 +208,8 @@ var FormatSniffer = require('../format_sniffer/sniffer.js');
         map.on('draw:created', function (e) {
             Bbox.drawnItems.addLayer(e.layer);
             bounds.setBounds(Bbox.drawnItems.getBounds())
-            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+            $('#boxbounds').text(Bbox.formatBounds(bounds.getBounds(),'4326','gdal'));
+            $('#boxboundsmerc').text(Bbox.formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
             if (!e.geojson &&
                 !((Bbox.drawnItems.getLayers().length == 1) && (Bbox.drawnItems.getLayers()[0] instanceof L.Marker))) {
                 map.fitBounds(bounds.getBounds());
@@ -228,13 +227,13 @@ var FormatSniffer = require('../format_sniffer/sniffer.js');
             if (Bbox.drawnItems.getLayers().length > 0 &&
                 !((Bbox.drawnItems.getLayers().length == 1) && (Bbox.drawnItems.getLayers()[0] instanceof L.Marker))) {
                 bounds.setBounds(Bbox.drawnItems.getBounds())
-                $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-                $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+                $('#boxbounds').text(Bbox.formatBounds(bounds.getBounds(),'4326','gdal'));
+                $('#boxboundsmerc').text(Bbox.formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
                 map.fitBounds(bounds.getBounds());
             } else {
                 bounds.setBounds(new L.LatLngBounds([0.0,0.0],[0.0,0.0]));
-                $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-                $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+                $('#boxbounds').text(Bbox.formatBounds(bounds.getBounds(),'4326','gdal'));
+                $('#boxboundsmerc').text(Bbox.formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
                 if (Bbox.drawnItems.getLayers().length == 1) {
                     map.panTo(Bbox.drawnItems.getLayers()[0].getLatLng());
                 }
@@ -243,37 +242,37 @@ var FormatSniffer = require('../format_sniffer/sniffer.js');
         
         map.on('draw:edited', function (e) {
             bounds.setBounds(Bbox.drawnItems.getBounds())
-            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+            $('#boxbounds').text(Bbox.formatBounds(bounds.getBounds(),'4326','gdal'));
+            $('#boxboundsmerc').text(Bbox.formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
             map.fitBounds(bounds.getBounds());
         });
         
         $('#zoomlevel').text(map.getZoom().toString());
-        $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
-        $('#mapboundsmerc').text(formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
-        $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
-        $('#centermerc').text(formatPoint(map.getCenter(),Bbox.currentproj,'gdal'));
-        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
-        $('#mousepos').text(formatPoint(new L.LatLng(0, 0),'4326','gdal'));
-        $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),Bbox.currentproj,'gdal'));
+        $('#mapbounds').text(Bbox.formatBounds(map.getBounds(),'4326','gdal'));
+        $('#mapboundsmerc').text(Bbox.formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
+        $('#center').text(Bbox.formatPoint(map.getCenter(),'4326','gdal'));
+        $('#centermerc').text(Bbox.formatPoint(map.getCenter(),Bbox.currentproj,'gdal'));
+        $('#boxbounds').text(Bbox.formatBounds(bounds.getBounds(),'4326','gdal'));
+        $('#boxboundsmerc').text(Bbox.formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+        $('#mousepos').text(Bbox.formatPoint(new L.LatLng(0, 0),'4326','gdal'));
+        $('#mouseposmerc').text(Bbox.formatPoint(new L.LatLng(0, 0),Bbox.currentproj,'gdal'));
 
         map.on('move', function(e) {
             crosshair.setLatLng(map.getCenter());
         });
 
         map.on('mousemove', function(e) {
-            $('#mousepos').text(formatPoint(e.latlng,'4326','gdal'));
-            $('#mouseposmerc').text(formatPoint(e.latlng,Bbox.currentproj,'gdal'));
-            $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
-            $('#mapboundsmerc').text(formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
-            $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
-            $('#centermerc').text(formatPoint(map.getCenter(),Bbox.currentproj,'gdal'));
+            $('#mousepos').text(Bbox.formatPoint(e.latlng,'4326','gdal'));
+            $('#mouseposmerc').text(Bbox.formatPoint(e.latlng,Bbox.currentproj,'gdal'));
+            $('#mapbounds').text(Bbox.formatBounds(map.getBounds(),'4326','gdal'));
+            $('#mapboundsmerc').text(Bbox.formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
+            $('#center').text(Bbox.formatPoint(map.getCenter(),'4326','gdal'));
+            $('#centermerc').text(Bbox.formatPoint(map.getCenter(),Bbox.currentproj,'gdal'));
         });
         map.on('zoomend', function(e) {
             $('#zoomlevel').text(map.getZoom().toString());
-            $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
-            $('#mapboundsmerc').text(formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
+            $('#mapbounds').text(Bbox.formatBounds(map.getBounds(),'4326','gdal'));
+            $('#mapboundsmerc').text(Bbox.formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
         });
 
         var zeroFeedback = function( target ){
@@ -383,7 +382,7 @@ var FormatSniffer = require('../format_sniffer/sniffer.js');
 
         // Add in a layer to overlay the tile bounds of the google grid
         var tiles = new L.tileLayer('/images/tile.png', {});
-        Bbox.self.addLayer(tiles, 'Tile Grid', 10, false)
+        Bbox.addLayer(tiles, 'Tile Grid', 10, false)
 
         // Test getting the proj strings
         $.getJSON( "proj/proj4defs.json").done(function( data ) {
@@ -399,10 +398,10 @@ var FormatSniffer = require('../format_sniffer/sniffer.js');
                     // Update all the proj windows
                     $('#projlabel').text('EPSG:'+ ui.item.value +' - ' + Bbox.proj4defs[ui.item.value][0]);
                     Bbox.currentproj = ui.item.value;
-                    $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
-                    $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),Bbox.currentproj,'gdal'));
-                    $('#mapboundsmerc').text(formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
-                    $('#centermerc').text(formatPoint(map.getCenter(),Bbox.currentproj,'gdal'));
+                    $('#boxboundsmerc').text(Bbox.formatBounds(bounds.getBounds(),Bbox.currentproj,'gdal'));
+                    $('#mouseposmerc').text(Bbox.formatPoint(new L.LatLng(0, 0),Bbox.currentproj,'gdal'));
+                    $('#mapboundsmerc').text(Bbox.formatBounds(map.getBounds(),Bbox.currentproj,'gdal'));
+                    $('#centermerc').text(Bbox.formatPoint(map.getCenter(),Bbox.currentproj,'gdal'));
                 }
             }).val('3857');
             // Set labels for output... left always 4326, right is proj selection
