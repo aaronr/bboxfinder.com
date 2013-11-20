@@ -72,18 +72,18 @@ L.Control.Sidebar = L.Control.extend({
     show: function () {
         if (!this.isVisible()) {
             L.DomUtil.addClass(this._container, 'visible');
-            this._map.panBy([-this.getOffset() / 2, 0], {
-                duration: 0.5
-            });
+            //this._map.panBy([-this.getOffset() / 2, 0], {
+            //    duration: 0.5
+            //});
         }
     },
 
     hide: function () {
         if (this.isVisible()) {
             L.DomUtil.removeClass(this._container, 'visible');
-            this._map.panBy([this.getOffset() / 2, 0], {
-                duration: 0.5
-            });
+            //this._map.panBy([this.getOffset() / 2, 0], {
+            //    duration: 0.5
+            //});
         }
     },
 
