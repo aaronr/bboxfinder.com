@@ -190,32 +190,39 @@ html, body, #map {
     list-style: none;
     margin: 0;
     padding: 0;
-    z-index: 100;
+    z-index: 100;  
 }
 
 #map-ui a {
-    font: normal 13px/18px 'Helvetica Neue', Helvetica, sans-serif;
-    background: #FFF;
-    color: #3C4E5A;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
     display: block;
-    margin: 0;
-    padding: 0;
-    border: 1px solid #BBB;
-    border-bottom-width: 0;
-    min-width: 75px;
-    padding: 2px;
-    text-decoration: none;
     text-align: center;
+    text-decoration: none;
+    color: black;
+    background-image: url('maps/images/bbox-sprites.png');
+    background-repeat: no-repeat;
 }
 
 #map-ui a:hover {
-    background: #ECF5FA;
+    background-color: #ECF5FA;
+}
+
+#map-ui li:last-child a.active {
+    border-bottom-width: 1px;
+    -webkit-border-radius: 0 0 3px 3px;
+    border-radius: 0 0 3px 3px;
+    background-position: -33px -2px;
 }
 
 #map-ui li:last-child a {
     border-bottom-width: 1px;
     -webkit-border-radius: 0 0 3px 3px;
     border-radius: 0 0 3px 3px;
+    background-position: -156px -2px;
 }
 
 #map-ui li:first-child a {
@@ -223,11 +230,20 @@ html, body, #map {
     border-radius: 3px 3px 0 0;
 }
 
-#map-ui a.active {
-    background: #3887BE;
-    border-color: #3887BE;
-    border-top-color: #FFF;
-    color: #FFF;
+#create-geojson a {
+    background-position: -124px -2px;
+}
+
+#create-geojson a.active {
+    background-position: -2px -2px;
+}
+
+#geolocation a {
+    background-position: -186px -2px;
+}
+
+#geolocation a.active {
+    background-position: -63px -2px;
 }
 
 .zeroclipboard-is-hover {
@@ -239,6 +255,7 @@ html, body, #map {
 }
 
 .leaflet-sidebar textarea{
+    display: none
     height: 95%;
     width: 100%;
     border: 1;

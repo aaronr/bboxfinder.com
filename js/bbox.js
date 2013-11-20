@@ -432,6 +432,8 @@ $(function() {
     
     map.addControl(rsidebar);
 
+    
+
     lsidebar = L.control.sidebar('lsidebar', {
         position: 'left'
     });
@@ -635,14 +637,19 @@ $(function() {
     });
 
     // handle create-geojson click events
-    $('#create-geojson').on( 'click' , function(){
-        rsidebar.show();
+    $('#create-geojson').click(function(){
+        rsidebar.toggle();
+	$('#create-geojson a').toggleClass('active');
     });
 
     // handle geolocation click events
-    $('#geolocation').on( 'click' , function(){
+    $('#geolocation').click( function(){
         map.locate({setView: true, maxZoom: 8});
+        $('#geolocation a').toggleClass('active');
+	$('#geolocation a').toggleClass('active', 350);
     });
+    
+
 
     $('button#add').on( 'click', function(evt){
         var sniffer = FormatSniffer( { data :  $('.leaflet-sidebar textarea').val() } );
@@ -658,7 +665,7 @@ $(function() {
 
     // Add in a layer to overlay the tile bounds of the google grid
     var tiles = new L.tileLayer('/images/tile.png', {});
-    addLayer(tiles, 'Tile Grid', 10, false)
+    addLayer(tiles, '', 10, false)
 
     // Test getting the proj strings
     $.getJSON( "proj/proj4defs.json").done(function( data ) {
