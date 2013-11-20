@@ -309,7 +309,7 @@ throw {
 
 function addLayer(layer, name, zIndex, on) {
     if (on) {
-        layer.setZIndex(zIndex).addTo(map);;
+        layer.setZIndex(zIndex).addTo(map);
     } else {
         layer.setZIndex(zIndex);
     }
@@ -319,9 +319,9 @@ function addLayer(layer, name, zIndex, on) {
     var link = document.createElement('a');
     link.href = '#';
     if (on) {
-        link.className = 'active';
-    } else {
         link.className = '';
+    } else {
+        link.className = 'active';
     }
     link.innerHTML = name;
     link.onclick = function(e) {
@@ -330,10 +330,10 @@ function addLayer(layer, name, zIndex, on) {
 
         if (map.hasLayer(layer)) {
             map.removeLayer(layer);
-            this.className = '';
+            this.className = 'active';
         } else {
             map.addLayer(layer);
-            this.className = 'active';
+            this.className = '';
         }
     };
     item.appendChild(link);
