@@ -255,7 +255,7 @@ html, body, #map {
 }
 
 .leaflet-sidebar textarea{
-    display: none
+    /* display: none; */
     height: 95%;
     width: 100%;
     border: 1;
