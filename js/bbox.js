@@ -407,7 +407,7 @@ function formatPoint(point, proj, tool) {
     return formattedBounds
 }
 
-$(function() {
+$(document).ready(function() {
 
     /* 
     **
@@ -429,6 +429,16 @@ $(function() {
 
     rsidebar = L.control.sidebar('rsidebar', {
         position: 'right'
+    });
+    rsidebar.on( "sidebar-show", function(e){
+        $("#map .leaflet-tile-loaded").addClass( "blurred" );
+    });
+    rsidebar.on( "sidebar-hide", function(e){
+        $('#map .leaflet-tile-loaded').removeClass('blurred');
+        $('#map .leaflet-tile-loaded').addClass('unblurred');
+        setTimeout( function(){
+            $('#map .leaflet-tile-loaded').removeClass('unblurred');
+        },7000);
     });
     
     map.addControl(rsidebar);
