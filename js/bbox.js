@@ -307,7 +307,7 @@ throw {
 })(); // end FormatSniffer
 
 
-function addLayer(layer, name, zIndex, on) {
+function addLayer(layer, name, title, zIndex, on) {
     if (on) {
         layer.setZIndex(zIndex).addTo(map);
     } else {
@@ -324,6 +324,7 @@ function addLayer(layer, name, zIndex, on) {
         link.className = 'active';
     }
     link.innerHTML = name;
+    link.title = title;
     link.onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -665,7 +666,7 @@ $(function() {
 
     // Add in a layer to overlay the tile bounds of the google grid
     var tiles = new L.tileLayer('/images/tile.png', {});
-    addLayer(tiles, '', 10, false)
+    addLayer(tiles, '', "Google tile boundaries", 10, false)
 
     // Test getting the proj strings
     $.getJSON( "proj/proj4defs.json").done(function( data ) {
