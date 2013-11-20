@@ -282,3 +282,30 @@ html, body, #map {
 * html .ui-autocomplete {
     height: 180px;
 }
+
+
+.unblurred.leaflet-tile-loaded {
+
+    -moz-filter: blur(0) sepia(0) invert(0);
+    -webkit-filter: blur(0) sepia(0) invert(0);
+    filter: blur(0) sepia(0) invert(0);
+
+    -moz-transition: all 1s ease;
+    -webkit-transition: all 1s ease;
+    transition: all 1s ease;
+}
+
+
+
+.blurred.leaflet-tile-loaded {
+
+    -moz-filter: blur(1px) sepia(1) invert(1);
+    -moz-transition: all 1s ease;
+
+    -webkit-filter: blur(1px) sepia(1) invert(1);
+    -webkit-transition: all 1s ease;
+
+    filter: blur(1px) sepia(1) invert(1);
+    transition: all 1s ease;
+
+}
