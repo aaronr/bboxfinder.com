@@ -406,7 +406,7 @@ function formatPoint(point, proj, tool) {
     return formattedBounds
 }
 
-$(function() {
+$(document).ready(function() {
 
     /* 
     **
