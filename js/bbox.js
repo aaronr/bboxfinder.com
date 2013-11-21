@@ -319,9 +319,9 @@ function addLayer(layer, name, title, zIndex, on) {
     var link = document.createElement('a');
     link.href = '#';
     if (on) {
-        link.className = '';
+        link.className = 'enabled';
     } else {
-        link.className = 'active';
+        link.className = '';
     }
     link.innerHTML = name;
     link.title = title;
@@ -331,10 +331,10 @@ function addLayer(layer, name, title, zIndex, on) {
 
         if (map.hasLayer(layer)) {
             map.removeLayer(layer);
-            this.className = 'active';
+            this.className = '';
         } else {
             map.addLayer(layer);
-            this.className = '';
+            this.className = 'enabled';
         }
     };
     item.appendChild(link);
@@ -650,7 +650,7 @@ $(document).ready(function() {
     // handle create-geojson click events
     $('#create-geojson').click(function(){
         rsidebar.toggle();
-	$('#create-geojson a').toggleClass('active');
+	$('#create-geojson a').toggleClass('enabled');
     });
 
     // handle geolocation click events

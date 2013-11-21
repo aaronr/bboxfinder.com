@@ -211,18 +211,18 @@ html, body, #map {
     background-color: #ECF5FA;
 }
 
-#map-ui li:last-child a.active {
+#map-ui li:last-child a {
     border-bottom-width: 1px;
     -webkit-border-radius: 0 0 3px 3px;
     border-radius: 0 0 3px 3px;
     background-position: -33px -2px;
 }
 
-#map-ui li:last-child a {
+#map-ui li:last-child a.enabled {
     border-bottom-width: 1px;
     -webkit-border-radius: 0 0 3px 3px;
     border-radius: 0 0 3px 3px;
-    background-position: -156px -2px;
+    background-position: -278px -2px;
 }
 
 #map-ui li:first-child a {
@@ -230,11 +230,11 @@ html, body, #map {
     border-radius: 3px 3px 0 0;
 }
 
-#create-geojson a {
-    background-position: -124px -2px;
+#create-geojson a.enabled {
+    background-position: -248px -2px;
 }
 
-#create-geojson a.active {
+#create-geojson a {
     background-position: -2px -2px;
 }
 
