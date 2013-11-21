@@ -5,7 +5,9 @@ html, body, #map {
    margin:0px;
 } 
 #wgslabel {
+   font-family: "Courier New", Courier, monospace;
    font-size: small;
+   font-weight:bold;
    left: 50px;
    position: absolute;
    bottom: 120px;
@@ -14,7 +16,9 @@ html, body, #map {
    z-index: 10000;
 }
 #projlabel {
+   font-family: "Courier New", Courier, monospace;
    font-size: small;
+   font-weight:bold;
    left: 440px;
    position: absolute;
    bottom: 120px;
@@ -181,6 +185,15 @@ html, body, #map {
     border-color: #3887BE;
     border-top-color: #FFF;
     color: #FFF;
+}
+
+.epsglabel {
+   font-family: "Courier New", Courier, monospace;
+   font-size: small;
+   font-weight:bold;
+   background-color:black;
+   color:white;
+   z-index: 10000;
 }
 
 #map-ui {

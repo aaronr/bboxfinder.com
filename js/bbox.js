@@ -428,7 +428,8 @@ $(document).ready(function() {
     map = L.mapbox.map('map', 'reprojected.g9on3k93').setView([0, 0], 3);
 
     rsidebar = L.control.sidebar('rsidebar', {
-        position: 'right'
+        position: 'right',
+        closeButton: false
     });
     rsidebar.on( "sidebar-show", function(e){
         $("#map .leaflet-tile-loaded").addClass( "blurred" );
@@ -667,6 +668,7 @@ $(document).ready(function() {
         var is_valid = sniffer.sniff();
         if (is_valid) {
             rsidebar.hide();
+	    $('#create-geojson a').toggleClass('enabled');
             map.fitBounds(bounds.getBounds());
         }
     });
