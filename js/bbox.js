@@ -700,6 +700,9 @@ $(document).ready(function() {
                 $('#centermerc').text(formatPoint(map.getCenter(),currentproj,'gdal'));
             }
         }).val('3857');
+        $('#projection').on( 'click', function(evt){
+             $( "#projection" ).autocomplete(  "search", currentproj  );
+        });        
         // Set labels for output... left always 4326, right is proj selection
         $('#wgslabel').text('EPSG:4326 - ' + proj4defs['4326'][0]);
         $('#projlabel').text('EPSG:3857 - ' + proj4defs['3857'][0]);
