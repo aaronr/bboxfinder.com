@@ -429,7 +429,7 @@ $(document).ready(function() {
 
     rsidebar = L.control.sidebar('rsidebar', {
         position: 'right',
-        closeButton: false
+        closeButton: true
     });
     rsidebar.on( "sidebar-show", function(e){
         $("#map .leaflet-tile-loaded").addClass( "blurred" );
@@ -651,7 +651,11 @@ $(document).ready(function() {
     // handle create-geojson click events
     $('#create-geojson').click(function(){
         rsidebar.toggle();
-	$('#create-geojson a').toggleClass('enabled');
+        $('#create-geojson a').toggleClass('enabled');
+    });
+    // close right sidebar with leaflet's "X"
+    $('.right a.close').click(function(){
+        $('#create-geojson a').toggleClass('enabled');
     });
 
     // handle geolocation click events
