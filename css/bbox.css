@@ -3,6 +3,7 @@ html, body, #map {
    width:100%;
    padding:0px;
    margin:0px;
+   font-family: "Courier New", Courier, monospace;
 } 
 #info-box {
   position:absolute;
@@ -18,63 +19,26 @@ html, body, #map {
   background-color:#333;
 }
 #wgslabel {
-   font-family: "Courier New", Courier, monospace;
-   font-size: small;
-   font-weight:bold;
-   /*left: 50px;*/
-   display:inline-block;
-   /*bottom: 120px;*/
-   color:white;
-   z-index: 10000;
    margin-right:50px;
 }
-#projlabel {
-   font-family: "Courier New", Courier, monospace;
+#projlabel,
+#wgslabel {
    font-size: small;
    font-weight:bold;
-   /*left: 440px;*/
    display:inline-block;
-   /*bottom: 120px;*/
    color:white;
    z-index: 10000;
 }
-#bbounds {
-   font-size: small;
-   /*left:10px;*/
-  display:block;
-   /*bottom: 100px;*/
-   z-index:10000;
-} 
-#mbounds {
-   font-size: small;
-   /*left:10px;*/
-  display:block;
-   /*bottom: 80px;*/
-   z-index:10000;
-} 
-#mcenter {
-   font-size: small;
-   /*left:10px;*/
-  display:block;
-   /*bottom: 60px;*/
-   z-index:10000;
-} 
-#mouse {
-   font-size: small;
-   /*left:27px;*/
-  display:block;
-   /*bottom: 40px;*/
-   z-index:10000;
-} 
+#bbounds,
+#mbounds,
+#mcenter,
+#mouse,
 #zoom {
-   font-size: small;
-   /*left:27px;*/
+  font-size: small;
   display:block;
-   /*bottom: 20px;*/
-   z-index:10000;
-} 
+  z-index:10000;
+}
 .bboxlabel {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    z-index:10000;
@@ -86,7 +50,6 @@ html, body, #map {
    width:40px;
 } 
 .bboxlabelbig {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    z-index:10000;
@@ -98,7 +61,6 @@ html, body, #map {
    width:60px;
 } 
 .bboxllpos {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    background-color:white;
@@ -109,7 +71,6 @@ html, body, #map {
 }
 
 .bboxllpossmall {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    background-color:white;
@@ -120,7 +81,6 @@ html, body, #map {
 }
 
 .bboxprojpos {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    background-color:white;
@@ -131,7 +91,6 @@ html, body, #map {
 }
 
 .bboxprojpossmall {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    background-color:white;
@@ -142,7 +101,6 @@ html, body, #map {
 }
 
 .zoomsmall {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    background-color:white;
@@ -200,7 +158,6 @@ html, body, #map {
 }
 
 .epsglabel {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    background-color:black;
