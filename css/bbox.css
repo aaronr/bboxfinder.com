@@ -4,61 +4,73 @@ html, body, #map {
    padding:0px;
    margin:0px;
 } 
+#info-box {
+  position:absolute;
+  width:100%;
+  height:auto;
+  bottom:0;
+  background-color:rgba(255,255,255,0.7);
+  text-align:center;
+  z-index:10000;
+}
+#labels {
+  padding:2px 0;
+  background-color:#333;
+}
 #wgslabel {
    font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
-   left: 50px;
-   position: absolute;
-   bottom: 120px;
-   background-color:black;
+   /*left: 50px;*/
+   display:inline-block;
+   /*bottom: 120px;*/
    color:white;
    z-index: 10000;
+   margin-right:50px;
 }
 #projlabel {
    font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
-   left: 440px;
-   position: absolute;
-   bottom: 120px;
-   background-color:black;
+   /*left: 440px;*/
+   display:inline-block;
+   /*bottom: 120px;*/
    color:white;
    z-index: 10000;
 }
 #bbounds {
    font-size: small;
-   left:10px;
-   position:absolute;
-   bottom: 100px;
+   /*left:10px;*/
+  display:block;
+   /*bottom: 100px;*/
    z-index:10000;
 } 
 #mbounds {
    font-size: small;
-   left:10px;
-   position:absolute;
-   bottom: 80px;
+   /*left:10px;*/
+  display:block;
+   /*bottom: 80px;*/
    z-index:10000;
 } 
 #mcenter {
    font-size: small;
-   left:10px;
-   position:absolute;
-   bottom: 60px;
+   /*left:10px;*/
+  display:block;
+   /*bottom: 60px;*/
    z-index:10000;
 } 
 #mouse {
    font-size: small;
-   left:27px;
-   position:absolute;
-   bottom: 40px;
+   /*left:27px;*/
+  display:block;
+   /*bottom: 40px;*/
    z-index:10000;
 } 
 #zoom {
    font-size: small;
-   left:27px;
-   position:absolute;
-   bottom: 20px;
+   /*left:27px;*/
+  display:block;
+   /*bottom: 20px;*/
    z-index:10000;
 } 
 .bboxlabel {
