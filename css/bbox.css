@@ -10,13 +10,35 @@ html, body, #map {
   width:100%;
   height:auto;
   bottom:0;
-  background-color:rgba(255,255,255,0.7);
+  border:0 0 7px 0;
   text-align:center;
   z-index:10000;
 }
+#info-toggle {
+  text-align:right;
+}
+#info-toggle-button {
+  position:relative;
+  width:60px;
+  padding:4px 0;
+  left:40px;
+  background-color:#ffffff;
+  text-align:center;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  font-weight:900;
+  cursor:pointer;
+}
+#info-toggle-button:hover {
+  background-color:#f4f4f4;
+}
+#info.active {
+  
+}
 #labels {
   padding:2px 0;
-  background-color:#333;
+  background-color:#e1e1e1;
+  border-bottom:#c0c0c0 solid 1px;
 }
 #wgslabel {
    margin-right:50px;
@@ -26,8 +48,12 @@ html, body, #map {
    font-size: small;
    font-weight:bold;
    display:inline-block;
-   color:white;
+   color:#333;
    z-index: 10000;
+}
+#coords {
+  padding:7px 0;
+  background-color:rgba(255,255,255,0.7);
 }
 #bbounds,
 #mbounds,

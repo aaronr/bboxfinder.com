@@ -658,6 +658,17 @@ $(document).ready(function() {
         $('#create-geojson a').toggleClass('enabled');
     });
 
+    // toggle #info-box
+    $('#info-toggle-button').click(function(){
+        $('#info').slideToggle(300);
+        var buttonText = $('#info-toggle-button').text();
+        if (buttonText == 'Hide') {
+            $('#info-toggle-button').text('Show');
+        } else {
+            $('#info-toggle-button').text('Hide');
+        }
+    });
+
     // handle geolocation click events
     $('#geolocation').click( function(){
         map.locate({setView: true, maxZoom: 8});
