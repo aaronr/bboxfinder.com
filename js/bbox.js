@@ -1,4 +1,5 @@
 var map, rsidebar, lsidebar, drawControl, drawnItems = null;
+var apikey = window.location.hostname.indexOf('bboxfinder.com') !== -1 ? 'reprojected.g9on3k93' : 'examples.map-9ijuk24y';
 
 // Where we keep the big list of proj defs from the server
 var proj4defs = null;
@@ -425,7 +426,7 @@ $(document).ready(function() {
     // Have to init the projection input box as it is used to format the initial values
     $( "#projection" ).val(currentproj);
 
-    map = L.mapbox.map('map', 'reprojected.g9on3k93').setView([0, 0], 3);
+    map = L.mapbox.map('map', apikey).setView([0, 0], 3);
 
     rsidebar = L.control.sidebar('rsidebar', {
         position: 'right',
