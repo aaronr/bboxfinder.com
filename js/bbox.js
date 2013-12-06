@@ -537,7 +537,7 @@ $(document).ready(function() {
         map.fitBounds(bounds.getBounds());
     });
     
-    $('#zoomlevel').text(map.getZoom().toString());
+    $('.zoomlevel').text(map.getZoom().toString());
     $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
     $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
     $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
@@ -560,7 +560,7 @@ $(document).ready(function() {
         $('#centermerc').text(formatPoint(map.getCenter(),currentproj,'gdal'));
     });
     map.on('zoomend', function(e) {
-        $('#zoomlevel').text(map.getZoom().toString());
+        $('.zoomlevel').text(map.getZoom().toString());
         $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
         $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
     });
@@ -656,6 +656,33 @@ $(document).ready(function() {
     // close right sidebar with leaflet's "X"
     $('.right a.close').click(function(){
         $('#create-geojson a').toggleClass('enabled');
+    });
+
+    // toggle #info-box
+    $('#info-toggle-button').click(function(){
+        $('#wgslabel, #projlabel').fadeToggle(200);
+        $('#info').delay(300).slideToggle(200);
+        
+        
+        var buttonText = $('#info-toggle-button').text();
+        if (buttonText == 'Hide Coordinates') {
+            $('#info-toggle-button').text('Show Coordinates');
+        } else {
+            $('#info-toggle-button').text('Hide Coordinates');
+        }
+    });
+
+    // toggle coordinate tabs
+    $('#wgslabel, #projlabel').click(function(){
+        active = $(this).hasClass('active');
+        if(active){
+            //do nothing
+        } else {
+            $('#wgslabel, #projlabel').toggleClass('active');
+            $('#wgscoords, #projcoords').toggle();
+        }
+        
+        
     });
 
     // handle geolocation click events

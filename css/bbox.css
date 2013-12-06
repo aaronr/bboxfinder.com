@@ -3,78 +3,76 @@ html, body, #map {
    width:100%;
    padding:0px;
    margin:0px;
+   font-family: "Courier New", Courier, monospace;
 } 
+#info-box {
+  position:absolute;
+  width:100%;
+  height:auto;
+  bottom:0;
+  border:0 0 7px 0;
+  z-index:10000;
+}
+#info img {
+  vertical-align:middle;
+  height:16px;
+  width:auto;
+  opacity:0.6;
+}
+#info img:hover {
+  opacity:1;
+  cursor:pointer;
+}
+#info-toggle ul {
+  margin:0 0 0 20px;
+  padding:0;
+}
+#info-toggle ul li {
+  display:inline-block;
+  padding:4px 7px 0;
+  background-color:rgba(230,230,230,0.4);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  font-weight:900;
+  cursor:pointer;
+}
+#info-toggle ul li.active {
+  background-color:rgba(255,255,255,0.8);
+}
+#info-toggle-button {
+  background-color:rgba(0,0,0,0.7) !important;
+  color:#fff;
+}
+#info-toggle-button:hover {
+  background-color:#f4f4f4;
+}
+#projlabel,
 #wgslabel {
-   font-family: "Courier New", Courier, monospace;
-   font-size: small;
-   font-weight:bold;
-   left: 50px;
-   position: absolute;
-   bottom: 120px;
-   background-color:black;
-   color:white;
-   z-index: 10000;
+  display:inline-block;
+  color:#333;
+  z-index: 10000;
 }
-#projlabel {
-   font-family: "Courier New", Courier, monospace;
-   font-size: small;
-   font-weight:bold;
-   left: 440px;
-   position: absolute;
-   bottom: 120px;
-   background-color:black;
-   color:white;
-   z-index: 10000;
+#projcoords {
+  display:none;
 }
-#bbounds {
-   font-size: small;
-   left:10px;
-   position:absolute;
-   bottom: 100px;
-   z-index:10000;
-} 
-#mbounds {
-   font-size: small;
-   left:10px;
-   position:absolute;
-   bottom: 80px;
-   z-index:10000;
-} 
+.coords {
+  text-align:left;
+  padding:7px 0;
+  background-color:rgba(255,255,255,0.8);
+}
+#bbounds,
+#mbounds,
 #mcenter {
-   font-size: small;
-   left:10px;
-   position:absolute;
-   bottom: 60px;
-   z-index:10000;
-} 
-#mouse {
-   font-size: small;
-   left:27px;
-   position:absolute;
-   bottom: 40px;
-   z-index:10000;
-} 
+  font-size: small;
+  display:block;
+  z-index:10000;
+  padding:2px 0;
+}
+#mouse, 
 #zoom {
-   font-size: small;
-   left:27px;
-   position:absolute;
-   bottom: 20px;
-   z-index:10000;
-} 
+  display:inline-block;
+}
 .bboxlabel {
-   font-family: "Courier New", Courier, monospace;
-   font-size: small;
-   font-weight:bold;
-   z-index:10000;
-   background-color:black;
-   color:white;
-   text-align:center;
-   display:inline-block;
-   padding-left:2px;
-   width:40px;
-} 
-.bboxlabelbig {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    z-index:10000;
@@ -85,60 +83,22 @@ html, body, #map {
    padding-left:2px;
    width:60px;
 } 
-.bboxllpos {
-   font-family: "Courier New", Courier, monospace;
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:350px;
-}
-
-.bboxllpossmall {
-   font-family: "Courier New", Courier, monospace;
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:200px;
-}
-
-.bboxprojpos {
-   font-family: "Courier New", Courier, monospace;
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:450px;
-}
-
-.bboxprojpossmall {
-   font-family: "Courier New", Courier, monospace;
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:250px;
-}
-
+.bboxllpos,
+.bboxllpossmall,
+.bboxprojpos,
+.bboxprojpossmall,
 .zoomsmall {
-   font-family: "Courier New", Courier, monospace;
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:20px;
+  font-size:small;
+  font-weight:bold;
+  color:black;
+  display:inline-block;
+  padding-left:5px;
 }
+.bboxllpos { width:350px; }
+.bboxllpossmall { width:200px; }
+.bboxprojpos { width:450px; }
+.bboxprojpossmall { width:250px; }
+.zoomsmall { width:20px; }
 
 #map-ui-proj {
     position: absolute;
@@ -188,7 +148,6 @@ html, body, #map {
 }
 
 .epsglabel {
-   font-family: "Courier New", Courier, monospace;
    font-size: small;
    font-weight:bold;
    background-color:black;
@@ -260,11 +219,7 @@ html, body, #map {
 }
 
 .zeroclipboard-is-hover {
-  color: rgb(51, 51, 51);
-  background-color: rgb(230, 230, 230);
-  text-decoration: none;
-  background-position: 0px -15px;
-  transition: background-position 0.1s linear 0s;
+  opacity:1 !important;
 }
 
 .leaflet-sidebar textarea{
