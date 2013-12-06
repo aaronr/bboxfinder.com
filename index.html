@@ -45,27 +45,56 @@
 
     <section id="info-box">
         <div id="info-toggle">
-            <div id="info-toggle-button">Hide</div>
+            <ul>
+                <li id="info-toggle-button">Hide Coordinates</li>
+                <li id="wgslabel" class="active"></li>
+                <li id="projlabel"></li>
+            </ul>
         </div>
         <div id="info">
-            <div id="labels">
-                <div id="wgslabel"></div><div id="projlabel"></div>
-            </div>
-            <div id="coords">
-                <div id="bbounds">
-                    <img id="boxboundsbtn" data-clipboard-target="boxbounds" src="/images/copy.png" style="vertical-align:bottom;height:18px;"><span id="boxbounds" class="bboxllpos"></span><span id="bbboundslabel" class="bboxlabel">Box</span><span id="boxboundsmerc" class="bboxprojpos"></span><img id="boxboundsmercbtn" data-clipboard-target="boxboundsmerc" src="/images/copy.png" style="vertical-align:bottom;height:18px;">
-                </div>
-                <div id="mbounds">
-                    <img id="mapboundsbtn" data-clipboard-target="mapbounds" src="/images/copy.png" style="vertical-align:bottom;height:18px;"><span id="mapbounds" class="bboxllpos"></span><span id="mboundslabel" class="bboxlabel">Map</span><span id="mapboundsmerc" class="bboxprojpos"></span><img id="mapboundsmercbtn" data-clipboard-target="mapboundsmerc" src="/images/copy.png" style="vertical-align:bottom;height:18px;">
-                </div>
-                <div id="mcenter">
-                    <img id="centerbtn" data-clipboard-target="center" src="/images/copy.png" style="vertical-align:bottom;height:18px;"><span id="center" class="bboxllpossmall"></span><span id="mcenterlabel" class="bboxlabelbig">Center</span><span id="centermerc" class="bboxprojpossmall"></span><img id="centermercbtn" data-clipboard-target="centermerc" src="/images/copy.png" style="vertical-align:bottom;height:18px;">
-                </div>
+            <div id="wgscoords" class="coords">
                 <div id="mouse">
-                    <span id="mousepos" class="bboxllpossmall"></span><span id="mouselabel" class="bboxlabelbig">Mouse</span><span id="mouseposmerc" class="bboxprojpossmall"></span>
+                    <span id="mouselabel" class="bboxlabel">Mouse</span>
+                    <span id="mousepos" class="bboxllpossmall"></span>
                 </div>
                 <div id="zoom">
-                    <span id="bboxlabel" class="bboxlabelbig">Zoom</span><span id="zoomlevel" class="zoomsmall"></span>
+                    <span id="bboxlabel" class="bboxlabel">Zoom</span>
+                    <span class="zoomlevel zoomsmall"></span>
+                </div>
+                <div id="bbounds">
+                    <span id="bbboundslabel" class="bboxlabel">Box</span>
+                    <img id="boxboundsbtn" data-clipboard-target="boxbounds" src="/images/copy.png"><span id="boxbounds" class="bboxllpos"></span>
+                </div>
+                <div id="mbounds">
+                    <span id="mboundslabel" class="bboxlabel">Map</span>
+                    <img id="mapboundsbtn" data-clipboard-target="mapbounds" src="/images/copy.png"><span id="mapbounds" class="bboxllpos"></span>
+                </div>
+                <div id="mcenter">
+                    <span id="mcenterlabel" class="bboxlabel">Center</span>
+                    <img id="centerbtn" data-clipboard-target="center" src="/images/copy.png"><span id="center" class="bboxllpossmall"></span>
+                </div>
+                
+            </div>
+            <div id="projcoords" class="coords">
+                <div id="mouse">
+                    <span id="mouselabel" class="bboxlabel">Mouse</span>
+                    <span id="mouseposmerc" class="bboxprojpossmall"></span>
+                </div>
+                <div id="zoom">
+                    <span id="bboxlabel" class="bboxlabel">Zoom</span>
+                    <span class="zoomlevel zoomsmall"></span>
+                </div>
+                <div id="bbounds">
+                    <span id="bbboundslabel" class="bboxlabel">Box</span>
+                    <img id="boxboundsmercbtn" data-clipboard-target="boxboundsmerc" src="/images/copy.png"><span id="boxboundsmerc" class="bboxprojpos"></span>
+                </div>
+                <div id="mbounds">
+                    <span id="mboundslabel" class="bboxlabel">Map</span>
+                    <img id="mapboundsmercbtn" data-clipboard-target="mapboundsmerc" src="/images/copy.png"><span id="mapboundsmerc" class="bboxprojpos"></span>
+                </div>
+                <div id="mcenter">
+                    <span id="mcenterlabel" class="bboxlabel">Center</span>
+                    <img id="centermercbtn" data-clipboard-target="centermerc" src="/images/copy.png"><span id="centermerc" class="bboxprojpossmall"></span>
                 </div>
             </div>
         </div>

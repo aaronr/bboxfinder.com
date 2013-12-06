@@ -11,58 +11,66 @@ html, body, #map {
   height:auto;
   bottom:0;
   border:0 0 7px 0;
-  text-align:center;
   z-index:10000;
 }
-#info-toggle {
-  text-align:right;
+#info img {
+  vertical-align:middle;
+  height:16px;
+  width:auto;
+  opacity:0.6;
 }
-#info-toggle-button {
-  position:relative;
-  width:60px;
-  padding:4px 0;
-  left:40px;
-  background-color:#ffffff;
-  text-align:center;
+#info img:hover {
+  opacity:1;
+  cursor:pointer;
+}
+#info-toggle ul {
+  margin:0 0 0 20px;
+  padding:0;
+}
+#info-toggle ul li {
+  display:inline-block;
+  padding:4px 7px 0;
+  background-color:rgba(230,230,230,0.4);
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
   font-weight:900;
   cursor:pointer;
 }
+#info-toggle ul li.active {
+  background-color:rgba(255,255,255,0.8);
+}
+#info-toggle-button {
+  background-color:rgba(0,0,0,0.7) !important;
+  color:#fff;
+}
 #info-toggle-button:hover {
   background-color:#f4f4f4;
 }
-#info.active {
-  
-}
-#labels {
-  padding:2px 0;
-  background-color:#e1e1e1;
-  border-bottom:#c0c0c0 solid 1px;
-}
-#wgslabel {
-   margin-right:50px;
-}
 #projlabel,
 #wgslabel {
-   font-size: small;
-   font-weight:bold;
-   display:inline-block;
-   color:#333;
-   z-index: 10000;
+  display:inline-block;
+  color:#333;
+  z-index: 10000;
 }
-#coords {
+#projcoords {
+  display:none;
+}
+.coords {
+  text-align:left;
   padding:7px 0;
-  background-color:rgba(255,255,255,0.7);
+  background-color:rgba(255,255,255,0.8);
 }
 #bbounds,
 #mbounds,
-#mcenter,
-#mouse,
-#zoom {
+#mcenter {
   font-size: small;
   display:block;
   z-index:10000;
+  padding:2px 0;
+}
+#mouse, 
+#zoom {
+  display:inline-block;
 }
 .bboxlabel {
    font-size: small;
@@ -73,68 +81,24 @@ html, body, #map {
    text-align:center;
    display:inline-block;
    padding-left:2px;
-   width:40px;
-} 
-.bboxlabelbig {
-   font-size: small;
-   font-weight:bold;
-   z-index:10000;
-   background-color:black;
-   color:white;
-   text-align:center;
-   display:inline-block;
-   padding-left:2px;
    width:60px;
 } 
-.bboxllpos {
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:350px;
-}
-
-.bboxllpossmall {
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:200px;
-}
-
-.bboxprojpos {
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:450px;
-}
-
-.bboxprojpossmall {
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:250px;
-}
-
+.bboxllpos,
+.bboxllpossmall,
+.bboxprojpos,
+.bboxprojpossmall,
 .zoomsmall {
-   font-size: small;
-   font-weight:bold;
-   background-color:white;
-   color:black;
-   display:inline-block;
-   padding-left:2px;
-   width:20px;
+  font-size:small;
+  font-weight:bold;
+  color:black;
+  display:inline-block;
+  padding-left:5px;
 }
+.bboxllpos { width:350px; }
+.bboxllpossmall { width:200px; }
+.bboxprojpos { width:450px; }
+.bboxprojpossmall { width:250px; }
+.zoomsmall { width:20px; }
 
 #map-ui-proj {
     position: absolute;
@@ -255,11 +219,7 @@ html, body, #map {
 }
 
 .zeroclipboard-is-hover {
-  color: rgb(51, 51, 51);
-  background-color: rgb(230, 230, 230);
-  text-decoration: none;
-  background-position: 0px -15px;
-  transition: background-position 0.1s linear 0s;
+  opacity:1 !important;
 }
 
 .leaflet-sidebar textarea{
