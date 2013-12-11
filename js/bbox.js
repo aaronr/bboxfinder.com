@@ -408,8 +408,19 @@ function formatPoint(point, proj, tool) {
     return formattedBounds
 }
 
-$(document).ready(function() {
+function validateStringAsBounds(bounds) {
+    var splitBounds = bounds ? bounds.split(',') : null;
+    return ((splitBounds !== null) &&
+            (splitBounds.length == 4) &&
+            ((-90.0 <= parseFloat(splitBounds[0]) <= 90.0) &&
+             (-180.0 <= parseFloat(splitBounds[1]) <= 180.0) &&
+             (-90.0 <= parseFloat(splitBounds[2]) <= 90.0) &&
+             (-180.0 <= parseFloat(splitBounds[3]) <= 180.0)) &&
+            (parseFloat(splitBounds[0]) < parseFloat(splitBounds[2]) &&
+             parseFloat(splitBounds[1]) < parseFloat(splitBounds[3])))
+}
 
+$(document).ready(function() {
     /* 
     **
     **  make sure all textarea inputs
@@ -482,7 +493,8 @@ $(document).ready(function() {
     **  so it's not seen onload
     **
     */
-    var bounds = new L.Rectangle(new L.LatLngBounds([0.0,0.0],[0.0,0.0]),
+    startBounds = new L.LatLngBounds([0.0,0.0],[0.0,0.0]);
+    var bounds = new L.Rectangle(startBounds,
         {
             fill : false,
             opacity : 1.0,
@@ -493,9 +505,16 @@ $(document).ready(function() {
         // move it to the end of the parent
         var parent = e.target._container.parentElement;
         $( parent ).append( e.target._container ); 
+        // Set the hash
+        var southwest = this.getBounds().getSouthWest();
+        var northeast = this.getBounds().getNorthEast();
+        var xmin = southwest.lng.toFixed(6);
+        var ymin = southwest.lat.toFixed(6);
+        var xmax = northeast.lng.toFixed(6);
+        var ymax = northeast.lat.toFixed(6);
+        location.hash = ymin+','+xmin+','+ymax+','+xmax;
     });
     map.addLayer(bounds)
-
     map.on('draw:created', function (e) {
         drawnItems.addLayer(e.layer);
         bounds.setBounds(drawnItems.getBounds())
@@ -742,5 +761,28 @@ $(document).ready(function() {
         var err = textStatus + ", " + error;
         console.log( "Request Failed: " + err );
     });
+
+    var initialBBox = location.hash ? location.hash.replace(/^#/,'') : null;
+    if (initialBBox) {
+        if (validateStringAsBounds(initialBBox)) {
+            var splitBounds = initialBBox.split(',');
+            startBounds = new L.LatLngBounds([splitBounds[0],splitBounds[1]],
+                                             [splitBounds[2],splitBounds[3]]);
+            var lyr = new L.Rectangle( startBounds );    
+            var evt = {
+                layer : lyr,
+                layerType : "polygon",
+            } 
+            map.fire( 'draw:created', evt );
+            //map.fitBounds(bounds.getBounds());
+        } else {
+            // This will reset the hash if the original hash was not valid
+            bounds.setBounds(bounds.getBounds());
+        }
+    } else {
+        // Initially set the hash if there was not one set by the user
+        bounds.setBounds(bounds.getBounds());
+    }
+        
 });
 
