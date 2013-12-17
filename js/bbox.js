@@ -348,9 +348,9 @@ function formatBounds(bounds, proj, tool) {
     var southwest = bounds.getSouthWest();
     var northeast = bounds.getNorthEast();
     var xmin = 0;
-    var xmin = 0;
-    var xmin = 0;
-    var xmin = 0;   
+    var ymin = 0;
+    var xmax = 0;
+    var ymax = 0;   
     if (proj == '4326') {
         xmin = southwest.lng.toFixed(6);
         ymin = southwest.lat.toFixed(6);
