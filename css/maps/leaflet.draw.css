@@ -61,6 +61,11 @@
 	display: inline-block;
 }
 
+/* APR */
+.leaflet-draw-actions li a {
+	color: #ffffff;
+}
+
 .leaflet-draw-actions li:first-child a {
 	border-left: none;
 }
