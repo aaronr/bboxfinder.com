@@ -102,7 +102,7 @@ html, body, #map {
 
 #map-ui-proj {
     position: absolute;
-    top: 390px;
+    top: 420px;
     left: 10px;
     list-style: none;
     margin: 0;
@@ -216,6 +216,14 @@ html, body, #map {
 
 #geolocation a.active {
     background-position: -63px -2px;
+}
+
+#help a.enabled {
+    background-position: -342px -2px;
+}
+
+#help a {
+    background-position: -93px -2px;
 }
 
 .zeroclipboard-is-hover {
