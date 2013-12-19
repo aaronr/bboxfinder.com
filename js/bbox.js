@@ -678,6 +678,17 @@ $(document).ready(function() {
         $('#create-geojson a').toggleClass('enabled');
     });
 
+    // handle help button click events
+    $('#help').click(function(){
+        lsidebar.toggle();
+        $('#help a').toggleClass('enabled');
+    });
+    // close left sidebar with leaflet's "X"
+    $('.left a.close').click(function(){
+        $('#help a').toggleClass('enabled');
+    });
+
+
     // toggle #info-box
     $('#info-toggle-button').click(function(){
         $('#wgslabel, #projlabel').fadeToggle(200);
