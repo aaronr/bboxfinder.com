@@ -1,6 +1,19 @@
 var map, rsidebar, lsidebar, drawControl, drawnItems = null;
 var apikey = window.location.hostname.indexOf('bboxfinder.com') !== -1 ? 'reprojected.g9on3k93' : 'examples.map-9ijuk24y';
 
+if (typeof(Number.prototype.toRad) === "undefined") {
+    Number.prototype.toRad = function() {
+        return this * Math.PI / 180;
+    }
+}
+
+function getTileURL(lat, lon, zoom) {
+    var xtile = parseInt(Math.floor( (lon + 180) / 360 * (1<<zoom) ));
+    var ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat.toRad()) + 1 / Math.cos(lat.toRad())) / Math.PI) / 2 * (1<<zoom) ));
+    return "" + zoom + "/" + xtile + "/" + ytile;
+}
+
+
 // Where we keep the big list of proj defs from the server
 var proj4defs = null;
 // Where we keep the proj objects we are using in this session
@@ -578,6 +591,7 @@ $(document).ready(function() {
         $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
         $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
         $('#centermerc').text(formatPoint(map.getCenter(),currentproj,'gdal'));
+        console.log(getTileURL(e.latlng.lat, e.latlng.lng, map.getZoom()));
     });
     map.on('zoomend', function(e) {
         $('.zoomlevel').text(map.getZoom().toString());
