@@ -343,8 +343,8 @@ function addLayer(layer, name, title, zIndex, on) {
 };
 
 function formatBounds(bounds, proj) {
-    //nh temp
     var gdal = $("input[name='gdal-checkbox']").prop('checked');
+    var lngLat = $("input[name='coord-order']").prop('checked');
 
     var formattedBounds = '';
     var southwest = bounds.getSouthWest();
@@ -377,16 +377,24 @@ function formatBounds(bounds, proj) {
     }
 
     if (gdal) {
-        formattedBounds = xmin+','+ymin+','+xmax+','+ymax;
+        if (lngLat) {
+            formattedBounds = xmin+','+ymin+','+xmax+','+ymax;
+        } else {
+            formattedBounds = ymin+','+xmin+','+ymax+','+xmax;
+        }
     } else {
-        formattedBounds = xmin+' '+ymin+' '+xmax+' '+ymax;
+        if (lngLat) {
+            formattedBounds = xmin+' '+ymin+' '+xmax+' '+ymax;
+        } else {
+            formattedBounds = ymin+' '+xmin+' '+ymax+' '+xmax;
+        }
     }
     return formattedBounds
 }
 
 function formatPoint(point, proj) {
-    //nh temp
     var gdal = $("input[name='gdal-checkbox']").prop('checked');
+    var lngLat = $("input[name='coord-order']").prop('checked');
 
     var formattedPoint = '';
     if (proj == '4326') {
@@ -407,9 +415,17 @@ function formatPoint(point, proj) {
         y = point.y.toFixed(4);
     }
     if (gdal) {
-        formattedBounds = x+','+y;
+        if (lngLat) {
+            formattedBounds = x+','+y;
+        } else {
+            formattedBounds = y+','+x;
+        }
     } else {
-        formattedBounds = x+' '+y;
+        if (lngLat) {
+            formattedBounds = x+' '+y;
+        } else {
+            formattedBounds = y+' '+x;
+        }
     }
     return formattedBounds
 }
@@ -804,9 +820,9 @@ $(document).ready(function() {
         bounds.setBounds(bounds.getBounds());
     }
 
-    $("input[name='gdal-checkbox']").click(function(e) {
+    $("input").click(function(e) {
         display();
     });
-        
+
 });
 
