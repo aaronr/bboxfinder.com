@@ -75,7 +75,6 @@
                     <span id="mcenterlabel" class="bboxlabel">Center</span>
                     <img id="centerbtn" data-clipboard-target="center" src="/images/copy.png"><span id="center" class="bboxllpossmall"></span>
                 </div>
-                
             </div>
             <div id="projcoords" class="coords">
                 <div id="mouse">
@@ -98,6 +97,16 @@
                     <span id="mcenterlabel" class="bboxlabel">Center</span>
                     <img id="centermercbtn" data-clipboard-target="centermerc" src="/images/copy.png"><span id="centermerc" class="bboxprojpossmall"></span>
                 </div>
+            </div>
+            <div id="coord-format">
+                <div class="bboxlabel">
+                    Coordinate Format
+                </div>
+                <form>
+                    <input type="radio" name="coord-order" value="lng-lat" checked>Lng / Lat</input></br>
+                    <input type="radio" name="coord-order" value="lat-lng">Lat / Lng</input><br/>
+                    <input type="checkbox" name="gdal-checkbox" value="gdal" checked>GDAL</input>
+                </form>
             </div>
         </div>
     </section>

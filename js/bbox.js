@@ -342,8 +342,10 @@ function addLayer(layer, name, title, zIndex, on) {
     ui.appendChild(item);
 };
 
+function formatBounds(bounds, proj) {
+    var gdal = $("input[name='gdal-checkbox']").prop('checked');
+    var lngLat = $("input[name='coord-order']").prop('checked');
 
-function formatBounds(bounds, proj, tool) {
     var formattedBounds = '';
     var southwest = bounds.getSouthWest();
     var northeast = bounds.getNorthEast();
@@ -373,15 +375,27 @@ function formatBounds(bounds, proj, tool) {
         xmax = northeast.x.toFixed(4);
         ymax = northeast.y.toFixed(4);
     }
-    if (tool === 'gdal') {
-        formattedBounds = xmin+','+ymin+','+xmax+','+ymax;
+
+    if (gdal) {
+        if (lngLat) {
+            formattedBounds = xmin+','+ymin+','+xmax+','+ymax;
+        } else {
+            formattedBounds = ymin+','+xmin+','+ymax+','+xmax;
+        }
     } else {
-        formattedBounds = xmin+' '+ymin+' '+xmax+' '+ymax;
+        if (lngLat) {
+            formattedBounds = xmin+' '+ymin+' '+xmax+' '+ymax;
+        } else {
+            formattedBounds = ymin+' '+xmin+' '+ymax+' '+xmax;
+        }
     }
     return formattedBounds
 }
 
-function formatPoint(point, proj, tool) {
+function formatPoint(point, proj) {
+    var gdal = $("input[name='gdal-checkbox']").prop('checked');
+    var lngLat = $("input[name='coord-order']").prop('checked');
+
     var formattedPoint = '';
     if (proj == '4326') {
         x = point.lng.toFixed(6);
@@ -400,10 +414,18 @@ function formatPoint(point, proj, tool) {
         x = point.x.toFixed(4);
         y = point.y.toFixed(4);
     }
-    if (tool === 'gdal') {
-        formattedBounds = x+','+y;
+    if (gdal) {
+        if (lngLat) {
+            formattedBounds = x+','+y;
+        } else {
+            formattedBounds = y+','+x;
+        }
     } else {
-        formattedBounds = x+' '+y;
+        if (lngLat) {
+            formattedBounds = x+' '+y;
+        } else {
+            formattedBounds = y+' '+x;
+        }
     }
     return formattedBounds
 }
@@ -518,8 +540,8 @@ $(document).ready(function() {
     map.on('draw:created', function (e) {
         drawnItems.addLayer(e.layer);
         bounds.setBounds(drawnItems.getBounds())
-        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
+        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
         if (!e.geojson &&
             !((drawnItems.getLayers().length == 1) && (drawnItems.getLayers()[0] instanceof L.Marker))) {
             map.fitBounds(bounds.getBounds());
@@ -537,13 +559,13 @@ $(document).ready(function() {
         if (drawnItems.getLayers().length > 0 &&
             !((drawnItems.getLayers().length == 1) && (drawnItems.getLayers()[0] instanceof L.Marker))) {
             bounds.setBounds(drawnItems.getBounds())
-            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
+            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
             map.fitBounds(bounds.getBounds());
         } else {
             bounds.setBounds(new L.LatLngBounds([0.0,0.0],[0.0,0.0]));
-            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
+            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
             if (drawnItems.getLayers().length == 1) {
                 map.panTo(drawnItems.getLayers()[0].getLatLng());
             }
@@ -552,37 +574,40 @@ $(document).ready(function() {
     
     map.on('draw:edited', function (e) {
         bounds.setBounds(drawnItems.getBounds())
-        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
+        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
         map.fitBounds(bounds.getBounds());
     });
     
-    $('.zoomlevel').text(map.getZoom().toString());
-    $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
-    $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
-    $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
-    $('#centermerc').text(formatPoint(map.getCenter(),currentproj,'gdal'));
-    $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-    $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
-    $('#mousepos').text(formatPoint(new L.LatLng(0, 0),'4326','gdal'));
-    $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj,'gdal'));
+    function display() {
+        $('.zoomlevel').text(map.getZoom().toString());
+        $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
+        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
+        $('#center').text(formatPoint(map.getCenter(),'4326'));
+        $('#centermerc').text(formatPoint(map.getCenter(),currentproj));
+        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
+        $('#mousepos').text(formatPoint(new L.LatLng(0, 0),'4326'));
+        $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj));
+    }
+    display();
 
     map.on('move', function(e) {
         crosshair.setLatLng(map.getCenter());
     });
 
     map.on('mousemove', function(e) {
-        $('#mousepos').text(formatPoint(e.latlng,'4326','gdal'));
-        $('#mouseposmerc').text(formatPoint(e.latlng,currentproj,'gdal'));
-        $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
-        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
-        $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
-        $('#centermerc').text(formatPoint(map.getCenter(),currentproj,'gdal'));
+        $('#mousepos').text(formatPoint(e.latlng,'4326'));
+        $('#mouseposmerc').text(formatPoint(e.latlng,currentproj));
+        $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
+        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
+        $('#center').text(formatPoint(map.getCenter(),'4326'));
+        $('#centermerc').text(formatPoint(map.getCenter(),currentproj));
     });
     map.on('zoomend', function(e) {
         $('.zoomlevel').text(map.getZoom().toString());
-        $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
-        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
+        $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
+        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
     });
 
     var zeroFeedback = function( target ){
@@ -756,10 +781,10 @@ $(document).ready(function() {
                 // Update all the proj windows
                 $('#projlabel').text('EPSG:'+ ui.item.value +' - ' + proj4defs[ui.item.value][0]);
                 currentproj = ui.item.value;
-                $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
-                $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj,'gdal'));
-                $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
-                $('#centermerc').text(formatPoint(map.getCenter(),currentproj,'gdal'));
+                $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
+                $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj));
+                $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
+                $('#centermerc').text(formatPoint(map.getCenter(),currentproj));
             }
         }).val('3857');
         $('#projection').on( 'click', function(evt){
@@ -794,6 +819,10 @@ $(document).ready(function() {
         // Initially set the hash if there was not one set by the user
         bounds.setBounds(bounds.getBounds());
     }
-        
+
+    $("input").click(function(e) {
+        display();
+    });
+
 });
 

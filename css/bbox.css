@@ -13,6 +13,17 @@ html, body, #map {
   border:0 0 7px 0;
   z-index:10000;
 }
+#coord-format {
+  position:absolute;
+  bottom:0;
+  right:15;
+}
+#coord-format .bboxlabel {
+  width:100%;
+}
+#coord-format form {
+  margin-bottom:10px;
+}
 #info img {
   vertical-align:middle;
   height:16px;
@@ -83,6 +94,7 @@ html, body, #map {
    padding-left:2px;
    width:60px;
 } 
+
 .bboxllpos,
 .bboxllpossmall,
 .bboxprojpos,
