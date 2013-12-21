@@ -342,10 +342,9 @@ function addLayer(layer, name, title, zIndex, on) {
     ui.appendChild(item);
 };
 
-
 function formatBounds(bounds, proj) {
     //nh temp
-    var tool = 'gdal';
+    var gdal = $("input[name='gdal-checkbox']").prop('checked');
 
     var formattedBounds = '';
     var southwest = bounds.getSouthWest();
@@ -377,7 +376,7 @@ function formatBounds(bounds, proj) {
         ymax = northeast.y.toFixed(4);
     }
 
-    if (tool === 'gdal') {
+    if (gdal) {
         formattedBounds = xmin+','+ymin+','+xmax+','+ymax;
     } else {
         formattedBounds = xmin+' '+ymin+' '+xmax+' '+ymax;
@@ -387,7 +386,7 @@ function formatBounds(bounds, proj) {
 
 function formatPoint(point, proj) {
     //nh temp
-    var tool = 'gdal';
+    var gdal = $("input[name='gdal-checkbox']").prop('checked');
 
     var formattedPoint = '';
     if (proj == '4326') {
@@ -407,7 +406,7 @@ function formatPoint(point, proj) {
         x = point.x.toFixed(4);
         y = point.y.toFixed(4);
     }
-    if (tool === 'gdal') {
+    if (gdal) {
         formattedBounds = x+','+y;
     } else {
         formattedBounds = x+' '+y;
@@ -564,15 +563,18 @@ $(document).ready(function() {
         map.fitBounds(bounds.getBounds());
     });
     
-    $('.zoomlevel').text(map.getZoom().toString());
-    $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
-    $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
-    $('#center').text(formatPoint(map.getCenter(),'4326'));
-    $('#centermerc').text(formatPoint(map.getCenter(),currentproj));
-    $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
-    $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
-    $('#mousepos').text(formatPoint(new L.LatLng(0, 0),'4326'));
-    $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj));
+    function display() {
+        $('.zoomlevel').text(map.getZoom().toString());
+        $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
+        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
+        $('#center').text(formatPoint(map.getCenter(),'4326'));
+        $('#centermerc').text(formatPoint(map.getCenter(),currentproj));
+        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
+        $('#mousepos').text(formatPoint(new L.LatLng(0, 0),'4326'));
+        $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj));
+    }
+    display();
 
     map.on('move', function(e) {
         crosshair.setLatLng(map.getCenter());
@@ -801,6 +803,10 @@ $(document).ready(function() {
         // Initially set the hash if there was not one set by the user
         bounds.setBounds(bounds.getBounds());
     }
+
+    $("input[name='gdal-checkbox']").click(function(e) {
+        display();
+    });
         
 });
 
