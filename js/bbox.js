@@ -343,7 +343,10 @@ function addLayer(layer, name, title, zIndex, on) {
 };
 
 
-function formatBounds(bounds, proj, tool) {
+function formatBounds(bounds, proj) {
+    //nh temp
+    var tool = 'gdal';
+
     var formattedBounds = '';
     var southwest = bounds.getSouthWest();
     var northeast = bounds.getNorthEast();
@@ -373,6 +376,7 @@ function formatBounds(bounds, proj, tool) {
         xmax = northeast.x.toFixed(4);
         ymax = northeast.y.toFixed(4);
     }
+
     if (tool === 'gdal') {
         formattedBounds = xmin+','+ymin+','+xmax+','+ymax;
     } else {
@@ -381,7 +385,10 @@ function formatBounds(bounds, proj, tool) {
     return formattedBounds
 }
 
-function formatPoint(point, proj, tool) {
+function formatPoint(point, proj) {
+    //nh temp
+    var tool = 'gdal';
+
     var formattedPoint = '';
     if (proj == '4326') {
         x = point.lng.toFixed(6);
@@ -518,8 +525,8 @@ $(document).ready(function() {
     map.on('draw:created', function (e) {
         drawnItems.addLayer(e.layer);
         bounds.setBounds(drawnItems.getBounds())
-        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
+        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
         if (!e.geojson &&
             !((drawnItems.getLayers().length == 1) && (drawnItems.getLayers()[0] instanceof L.Marker))) {
             map.fitBounds(bounds.getBounds());
@@ -537,13 +544,13 @@ $(document).ready(function() {
         if (drawnItems.getLayers().length > 0 &&
             !((drawnItems.getLayers().length == 1) && (drawnItems.getLayers()[0] instanceof L.Marker))) {
             bounds.setBounds(drawnItems.getBounds())
-            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
+            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
             map.fitBounds(bounds.getBounds());
         } else {
             bounds.setBounds(new L.LatLngBounds([0.0,0.0],[0.0,0.0]));
-            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
+            $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+            $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
             if (drawnItems.getLayers().length == 1) {
                 map.panTo(drawnItems.getLayers()[0].getLatLng());
             }
@@ -552,37 +559,37 @@ $(document).ready(function() {
     
     map.on('draw:edited', function (e) {
         bounds.setBounds(drawnItems.getBounds())
-        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
+        $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+        $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
         map.fitBounds(bounds.getBounds());
     });
     
     $('.zoomlevel').text(map.getZoom().toString());
-    $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
-    $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
-    $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
-    $('#centermerc').text(formatPoint(map.getCenter(),currentproj,'gdal'));
-    $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326','gdal'));
-    $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
-    $('#mousepos').text(formatPoint(new L.LatLng(0, 0),'4326','gdal'));
-    $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj,'gdal'));
+    $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
+    $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
+    $('#center').text(formatPoint(map.getCenter(),'4326'));
+    $('#centermerc').text(formatPoint(map.getCenter(),currentproj));
+    $('#boxbounds').text(formatBounds(bounds.getBounds(),'4326'));
+    $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
+    $('#mousepos').text(formatPoint(new L.LatLng(0, 0),'4326'));
+    $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj));
 
     map.on('move', function(e) {
         crosshair.setLatLng(map.getCenter());
     });
 
     map.on('mousemove', function(e) {
-        $('#mousepos').text(formatPoint(e.latlng,'4326','gdal'));
-        $('#mouseposmerc').text(formatPoint(e.latlng,currentproj,'gdal'));
-        $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
-        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
-        $('#center').text(formatPoint(map.getCenter(),'4326','gdal'));
-        $('#centermerc').text(formatPoint(map.getCenter(),currentproj,'gdal'));
+        $('#mousepos').text(formatPoint(e.latlng,'4326'));
+        $('#mouseposmerc').text(formatPoint(e.latlng,currentproj));
+        $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
+        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
+        $('#center').text(formatPoint(map.getCenter(),'4326'));
+        $('#centermerc').text(formatPoint(map.getCenter(),currentproj));
     });
     map.on('zoomend', function(e) {
         $('.zoomlevel').text(map.getZoom().toString());
-        $('#mapbounds').text(formatBounds(map.getBounds(),'4326','gdal'));
-        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
+        $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
+        $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
     });
 
     var zeroFeedback = function( target ){
@@ -756,10 +763,10 @@ $(document).ready(function() {
                 // Update all the proj windows
                 $('#projlabel').text('EPSG:'+ ui.item.value +' - ' + proj4defs[ui.item.value][0]);
                 currentproj = ui.item.value;
-                $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj,'gdal'));
-                $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj,'gdal'));
-                $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj,'gdal'));
-                $('#centermerc').text(formatPoint(map.getCenter(),currentproj,'gdal'));
+                $('#boxboundsmerc').text(formatBounds(bounds.getBounds(),currentproj));
+                $('#mouseposmerc').text(formatPoint(new L.LatLng(0, 0),currentproj));
+                $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
+                $('#centermerc').text(formatPoint(map.getCenter(),currentproj));
             }
         }).val('3857');
         $('#projection').on( 'click', function(evt){
