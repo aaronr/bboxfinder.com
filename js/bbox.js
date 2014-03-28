@@ -6,6 +6,7 @@ var proj4defs = null;
 // Where we keep the proj objects we are using in this session
 var projdefs = {"4326":L.CRS.EPSG4326, "3857":L.CRS.EPSG3857};
 var currentproj = "3857";
+var currentmouse = L.latLng(0,0);
 
 /*
 **
@@ -392,6 +393,12 @@ function formatBounds(bounds, proj) {
     return formattedBounds
 }
 
+function formatTile(point,zoom) {
+    var xTile = Math.floor((point.lng+180)/360*Math.pow(2,zoom));
+    var yTile = Math.floor((1-Math.log(Math.tan(point.lat*Math.PI/180) + 1/Math.cos(point.lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom));
+    return xTile.toString() + ',' + yTile.toString();
+}
+
 function formatPoint(point, proj) {
     var gdal = $("input[name='gdal-checkbox']").prop('checked');
     var lngLat = $("input[name='coord-order']").prop('checked');
@@ -581,6 +588,7 @@ $(document).ready(function() {
     
     function display() {
         $('.zoomlevel').text(map.getZoom().toString());
+        $('.tilelevel').text(formatTile(new L.LatLng(0, 0),map.getZoom()));
         $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
         $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));
         $('#center').text(formatPoint(map.getCenter(),'4326'));
@@ -597,6 +605,9 @@ $(document).ready(function() {
     });
 
     map.on('mousemove', function(e) {
+        currentmouse.lat = e.latlng.lat;
+        currentmouse.lng = e.latlng.lng;
+        $('.tilelevel').text(formatTile(e.latlng,map.getZoom()));
         $('#mousepos').text(formatPoint(e.latlng,'4326'));
         $('#mouseposmerc').text(formatPoint(e.latlng,currentproj));
         $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
@@ -605,6 +616,7 @@ $(document).ready(function() {
         $('#centermerc').text(formatPoint(map.getCenter(),currentproj));
     });
     map.on('zoomend', function(e) {
+        $('.tilelevel').text(formatTile(currentmouse,map.getZoom()));
         $('.zoomlevel').text(map.getZoom().toString());
         $('#mapbounds').text(formatBounds(map.getBounds(),'4326'));
         $('#mapboundsmerc').text(formatBounds(map.getBounds(),currentproj));

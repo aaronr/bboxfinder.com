@@ -79,7 +79,8 @@ html, body, #map {
   z-index:10000;
   padding:2px 0;
 }
-#mouse, 
+#mouse,
+#tile, 
 #zoom {
   display:inline-block;
 }
@@ -99,6 +100,7 @@ html, body, #map {
 .bboxllpossmall,
 .bboxprojpos,
 .bboxprojpossmall,
+.tilesmall,
 .zoomsmall {
   font-size:small;
   font-weight:bold;
@@ -110,6 +112,7 @@ html, body, #map {
 .bboxllpossmall { width:200px; }
 .bboxprojpos { width:450px; }
 .bboxprojpossmall { width:250px; }
+.tilesmall { width:60px; }
 .zoomsmall { width:20px; }
 
 #map-ui-proj {
