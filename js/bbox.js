@@ -763,7 +763,7 @@ $(document).ready(function() {
 
 
     $('button#add').on( 'click', function(evt){
-        var sniffer = FormatSniffer( { data :  $('.leaflet-sidebar textarea').val() } );
+        var sniffer = FormatSniffer( { data :  $('div#rsidebar textarea').val() } );
         var is_valid = sniffer.sniff();
         if (is_valid) {
             rsidebar.hide();
@@ -772,7 +772,7 @@ $(document).ready(function() {
         }
     });
     $('button#clear').on( 'click', function(evt){
-        $('.leaflet-sidebar textarea').val('');
+        $('div#rsidebar textarea').val('');
     });
 
     // Add in a layer to overlay the tile bounds of the google grid
