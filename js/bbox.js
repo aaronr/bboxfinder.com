@@ -1,5 +1,4 @@
 var map, rsidebar, lsidebar, drawControl, drawnItems = null;
-var apikey = window.location.hostname.indexOf('bboxfinder.com') !== -1 ? 'reprojected.g9on3k93' : 'examples.map-9ijuk24y';
 
 // Where we keep the big list of proj defs from the server
 var proj4defs = null;
@@ -466,7 +465,8 @@ $(document).ready(function() {
     // Have to init the projection input box as it is used to format the initial values
     $( "#projection" ).val(currentproj);
 
-    map = L.mapbox.map('map', apikey).setView([0, 0], 3);
+    L.mapbox.accessToken = 'pk.eyJ1IjoiY3Vnb3MiLCJhIjoiY2p4Nm43MzA3MDFmZDQwcGxsMjB4Z3hnNiJ9.SQbnMASwdqZe6G4n6OMvVw';
+    map = L.mapbox.map('map').setView([0, 0], 3).addLayer(L.mapbox.styleLayer('mapbox://styles/mapbox/streets-v11'));
 
     rsidebar = L.control.sidebar('rsidebar', {
         position: 'right',
@@ -532,8 +532,8 @@ $(document).ready(function() {
     );
     bounds.on('bounds-set', function( e ) {
         // move it to the end of the parent
-        var parent = e.target._container.parentElement;
-        $( parent ).append( e.target._container ); 
+        var parent = e.target._renderer._container.parentElement;
+        $( parent ).append( e.target._renderer._container ); 
         // Set the hash
         var southwest = this.getBounds().getSouthWest();
         var northeast = this.getBounds().getNorthEast();

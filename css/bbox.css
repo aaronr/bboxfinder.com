@@ -117,7 +117,7 @@ html, body, #map {
 
 #map-ui-proj {
     position: absolute;
-    top: 420px;
+    top: 460px;
     left: 10px;
     list-style: none;
     margin: 0;
@@ -172,8 +172,8 @@ html, body, #map {
 
 #map-ui {
     position: absolute;
-    top: 300px;
-    left: 10px;
+    top: 330px;
+    left: 12px;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -183,9 +183,9 @@ html, body, #map {
 #map-ui a {
     background-color: #fff;
     border-bottom: 1px solid #ccc;
-    width: 26px;
-    height: 26px;
-    line-height: 26px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
     display: block;
     text-align: center;
     text-decoration: none;
@@ -259,6 +259,10 @@ html, body, #map {
 
 .leaflet-sidebar button{
    font-size: large;
+}
+
+.leaflet-sidebar .close{
+  z-index:10001;
 }
 
 .ui-autocomplete {
