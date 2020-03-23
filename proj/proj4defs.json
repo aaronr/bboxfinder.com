@@ -2455,6 +2455,16 @@
 "4812":["New Beijing / 3-degree Gauss-Kruger CM 132E","+proj=tmerc +lat_0=0 +lon_0=132 +k=1 +x_0=500000 +y_0=0 +ellps=krass +units=m +no_defs "],
 "4822":["New Beijing / 3-degree Gauss-Kruger CM 135E","+proj=tmerc +lat_0=0 +lon_0=135 +k=1 +x_0=500000 +y_0=0 +ellps=krass +units=m +no_defs "],
 "4826":["WGS 84 / Cape Verde National","+proj=lcc +lat_1=15 +lat_2=16.66666666666667 +lat_0=15.83333333333333 +lon_0=-24 +x_0=161587.83 +y_0=128511.202 +datum=WGS84 +units=m +no_defs "],
+"6339":["NAD83(2011) / UTM zone 10N","+proj=utm +zone=10 +ellps=GRS80 +units=m +no_defs "],
+"6340":["NAD83(2011) / UTM zone 11N","+proj=utm +zone=11 +ellps=GRS80 +units=m +no_defs "],
+"6341":["NAD83(2011) / UTM zone 12N","+proj=utm +zone=12 +ellps=GRS80 +units=m +no_defs "],
+"6342":["NAD83(2011) / UTM zone 13N","+proj=utm +zone=13 +ellps=GRS80 +units=m +no_defs "],
+"6343":["NAD83(2011) / UTM zone 14N","+proj=utm +zone=14 +ellps=GRS80 +units=m +no_defs "],
+"6344":["NAD83(2011) / UTM zone 15N","+proj=utm +zone=15 +ellps=GRS80 +units=m +no_defs "],
+"6345":["NAD83(2011) / UTM zone 16N","+proj=utm +zone=16 +ellps=GRS80 +units=m +no_defs "],
+"6346":["NAD83(2011) / UTM zone 17N","+proj=utm +zone=17 +ellps=GRS80 +units=m +no_defs "],
+"6347":["NAD83(2011) / UTM zone 18N","+proj=utm +zone=18 +ellps=GRS80 +units=m +no_defs "],
+"6348":["NAD83(2011) / UTM zone 19N","+proj=utm +zone=19 +ellps=GRS80 +units=m +no_defs "],
 "20004":["Pulkovo 1995 / Gauss-Kruger zone 4","+proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=4500000 +y_0=0 +ellps=krass +towgs84=24.82,-131.21,-82.66,-0,-0,0.16,-0.12 +units=m +no_defs "],
 "20005":["Pulkovo 1995 / Gauss-Kruger zone 5","+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=5500000 +y_0=0 +ellps=krass +towgs84=24.82,-131.21,-82.66,-0,-0,0.16,-0.12 +units=m +no_defs "],
 "20006":["Pulkovo 1995 / Gauss-Kruger zone 6","+proj=tmerc +lat_0=0 +lon_0=33 +k=1 +x_0=6500000 +y_0=0 +ellps=krass +towgs84=24.82,-131.21,-82.66,-0,-0,0.16,-0.12 +units=m +no_defs "],
@@ -3907,5 +3917,6 @@
 "32759":["WGS 84 / UTM zone 59S","+proj=utm +zone=59 +south +datum=WGS84 +units=m +no_defs "],
 "32760":["WGS 84 / UTM zone 60S","+proj=utm +zone=60 +south +datum=WGS84 +units=m +no_defs "],
 "32761":["WGS 84 / UPS South","+proj=stere +lat_0=-90 +lat_ts=-90 +lon_0=0 +k=0.994 +x_0=2000000 +y_0=2000000 +datum=WGS84 +units=m +no_defs "],
-"32766":["WGS 84 / TM 36 SE","+proj=tmerc +lat_0=0 +lon_0=36 +k=0.9996 +x_0=500000 +y_0=10000000 +datum=WGS84 +units=m +no_defs "]
+"32766":["WGS 84 / TM 36 SE","+proj=tmerc +lat_0=0 +lon_0=36 +k=0.9996 +x_0=500000 +y_0=10000000 +datum=WGS84 +units=m +no_defs "],
+"102003":["USA Contiguous Albers Equal Area Conic","+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs "]
 }
