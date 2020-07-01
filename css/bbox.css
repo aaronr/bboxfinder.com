@@ -112,7 +112,6 @@ html, body, #map {
 .bboxllpossmall { width:200px; }
 .bboxprojpos { width:450px; }
 .bboxprojpossmall { width:250px; }
-.tilesmall { width:60px; }
 .zoomsmall { width:20px; }
 
 #map-ui-proj {
